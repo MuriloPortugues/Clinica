@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title> Lita Medicos</title>
+</head>
+<body>
+    <main>
+        <h2>Lista de Médicos</h2>
+
+        <!-- Formulário de pesquisa por nome -->
+        <form th:action="@{/medico/buscarPorNome}" method="get">
+            <input type="text" name="nome" placeholder="Nome do medico" required>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <table class="table" border="1">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>CRM</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+                <th>Consultas</th>
+            </tr>
+            </thead>
+            <tr th:each="m : ${medicos}">
+                <td th:text="${m.id}"> </td>
+                <td th:text="${m.nome}"> </td>
+                <td th:text="${m.crm}"> </td>
+
+                <td> <a th:href="@{/medico/editMedico/{id}(id=${m.id})}"><button type="button">Editar</button></a> </td>
+
+                <td> <a onclick="return window.confirm('Tem certeza que deseja excluir este registro?')"  th:href="@{/medico/removeMedico/{id}(id=${m.id})}"><button type="submit">Excluir</button></a> </td>
+
+                <td> <a th:href="@{/consulta/consultasPorMedico/{id}(id=${m.id})}"><button type="button">Consultas</button></a> </td>
+            </tr>
+        </table>
+
+        <!-- Botão para inserir novo medico -->
+        <p></p>
+        <form th:action="@{/medico/form}" method="get">
+            <input type="submit" value="Inserir Novo Medico">
+        </form>
+
+        <p></p>
+        <div style="margin-bottom: 10px;">
+            <form th:action="@{/hospital/home}" method="get">
+                <input type="submit" value="Home">
+            </form>
+        </div>
+
+        <div>
+            <form th:action="@{/medico/apresentarMedico}" method="get">
+                <input type="submit" value="Listar">
+            </form>
+        </div>
+    </main>
+</body>
+</html>

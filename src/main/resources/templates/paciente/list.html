@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title> Lita Pacientes</title>
+</head>
+<body>
+    <main>
+        <h2>Lista de Pacientes</h2>
+
+        <!-- Formulário de pesquisa por nome -->
+            <form th:action="@{/paciente/buscarPorNome}" method="get">
+                <input type="text" name="nome" placeholder="Nome do paciente" required>
+                <button type="submit">Buscar</button>
+            </form>
+
+
+        <br>
+
+        <table class="table" border="1">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+                <th>Consultas</th>
+            </tr>
+            </thead>
+            <tr th:each="p : ${pacientes}">
+                <td th:text="${p.id}"> </td>
+                <td th:text="${p.nome}"> </td>
+                <td th:text="${p.telefone}"> </td>
+
+                <td> <a th:href="@{/paciente/editPaciente/{id}(id=${p.id})}"><button type="button">Editar</button></a> </td>
+
+                <td> <a onclick="return window.confirm('Tem certeza que deseja excluir este registro?')"  th:href="@{/paciente/removePaciente/{id}(id=${p.id})}"><button type="submit">Excluir</button></a> </td>
+
+                <td> <a th:href="@{/consulta/consultasPorPaciente/{id}(id=${p.id})}"><button type="button">Consultas</button></a> </td>
+            </tr>
+        </table>
+
+        <!-- Botão para inserir novo paciente -->
+        <p></p>
+        <form th:action="@{/paciente/form}" method="get">
+            <input type="submit" value="Inserir Novo Paciente">
+        </form>
+
+        <p></p>
+
+        <div style="margin-bottom: 10px;">
+            <form th:action="@{/hospital/home}" method="get">
+                <input type="submit" value="Home">
+            </form>
+        </div>
+
+        <div>
+            <form th:action="@{/paciente/apresentarPaciente}" method="get">
+                <input type="submit" value="Listar">
+            </form>
+        </div>
+
+    </main>
+</body>
+</html>

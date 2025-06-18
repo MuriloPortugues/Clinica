@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title> Lista Consultas</title>
+</head>
+<body>
+
+    <main>
+
+        <h2>Lista de Consultas</h2>
+
+        <!-- Formulário de pesquisa por nome -->
+        <form th:action="@{/consulta/buscarPorData}" method="get">
+            <input type="date" name="data" placeholder="Escolha a data" required>
+            <button type="submit">Buscar</button>
+        </form>
+
+        <table class="table" border="1">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Data</th>
+                <th>Valor</th>
+                <th>Observação</th>
+                <th>Paciente</th>
+                <th>Médico</th>
+                <th>Status</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${consultas}">
+                <td th:text="${c.id}"> </td>
+                <td th:text="${#temporals.format(c.data, 'dd/MM/yyyy HH:mm')}"> </td>
+                <td th:text="${#numbers.formatCurrency(c.valor)}"> </td>
+                <td th:text="${c.observacao}"> </td>
+                <td th:text="${c.paciente != null ? c.paciente.nome : 'Sem paciente'}"> </td>
+                <td th:text="${c.medico != null ? c.medico.nome : 'Sem médico'}"> </td>
+                <td th:text="${c.status}">AGENDADO</td>
+
+
+
+                <td> <a th:href="@{/consulta/editConsulta/{id}(id=${c.id})}"><button type="button">Editar</button></a> </td>
+
+                <td> <a onclick="return window.confirm('Tem certeza que deseja excluir este registro?')"  th:href="@{/consulta/removeConsulta/{id}(id=${c.id})}"><button type="submit">Excluir</button></a> </td>
+
+
+
+            </tr>
+            </tbody>
+        </table>
+
+
+        <div class="row text-center">
+            <div>
+                <a href="/consulta/form" class="btn btn-outline-danger">Inserir</a>
+
+                <a href="/consulta/apresentarConsulta" class="btn btn-outline-danger">Listar</a>
+
+                <a href="/hospital/home" class="btn btn-outline-danger">Home</a>
+                <p></p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-calendar-check-fill fs-1 text-danger"></i>
+                                <h5 class="card-title mt-2">Agendar Consultas</h5>
+                                <p class="card-text">Acesso para pacientes agendar consultas.</p>
+                                <a th:href="@{/agenda/list}" class="btn btn-outline-danger">Agendar</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-calendar-plus-fill fs-1 text-success"></i>
+                                <h5 class="card-title mt-2">Disponibilizar Consulta</h5>
+                                <p class="card-text">Acesso para médicos disponibilizar horário para consultas.</p>
+                                <a th:href="@{/agenda/disponibilizar}" class="btn btn-outline-danger">Disponibilizar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </main>
+</body>
+</html>

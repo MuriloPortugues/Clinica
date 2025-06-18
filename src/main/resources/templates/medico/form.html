@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title> Formulário Médico</title>
+</head>
+<body>
+    <main>
+        <h1>FORMULÁRIO DE MÉDICO</h1>
+        <form th:action="${medico.id == null} ? @{/medico/saveMedico} : @{/medico/updateMedico}" th:object="${medico}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="col-md-1">
+                <label class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></label>
+                <input type="text" th:field="*{nome}" th:errorclass="is-invalid" placeholder="Nome" class="form-control">
+                <div class="invalid-feedback">
+                    Insira o Nome.
+                </div>
+            </div>
+            <p></p>
+
+            <div class="col-md-2">
+                <label class="invalid-feedback" th:if="${#fields.hasErrors('crm')}" th:errors="*{crm}"></label>
+                <input type="text" th:field="*{crm}" th:errorclass="is-invalid" placeholder="CRM" class="form-control">
+                <div class="invalid-feedback">
+                    Insira o CRM.
+                </div>
+            </div>
+            <p></p>
+
+
+            <input type="submit" value="Enviar">
+        </form>
+        <p></p>
+        <form th:action="@{/medico/apresentarMedico}" method="get">
+            <input type="submit" value="Lista de Médicos">
+        </form>
+    </main>
+</body>
+</html>

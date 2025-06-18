@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+  <title>Home</title>
+</head>
+
+<body>
+
+  <main class="container mt-4">
+
+    <!-- Banner ou Destaque -->
+    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm" style="background-image: url('/images/hospital.jpg'); background-size: cover; background-position: center;">
+      <div class="container-fluid py-5 bg-opacity-75 bg-white rounded">
+        <h1 class="display-5 fw-bold text-primary">Bem-vindo ao Hospital Alfa</h1>
+        <p class="col-md-8 fs-4 text-dark">Cuidando da sua saúde com dedicação, tecnologia e profissionais especializados.</p>
+        <a class="btn btn-primary btn-lg" href="/agenda/list" role="button">Agendar Consulta</a>
+      </div>
+    </div>
+
+    <!-- Cards interativos -->
+    <div class="row text-center">
+
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <i class="bi bi-person-fill fs-1 text-primary"></i>
+            <h5 class="card-title mt-2">Pacientes</h5>
+            <p class="card-text">Gerencie os dados dos pacientes cadastrados.</p>
+            <a href="/paciente/apresentarPaciente" class="btn btn-outline-primary">Ver Pacientes</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <i class="bi bi-heart-pulse-fill fs-1 text-success"></i>
+            <h5 class="card-title mt-2">Médicos</h5>
+            <p class="card-text">Consulte e atualize as informações dos médicos.</p>
+            <a href="/medico/apresentarMedico" class="btn btn-outline-success">Ver Médicos</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <i class="bi bi-calendar-check-fill fs-1 text-danger"></i>
+            <h5 class="card-title mt-2">Consultas</h5>
+            <p class="card-text">Visualize e agende consultas médicas.</p>
+            <a href="/consulta/apresentarConsulta" class="btn btn-outline-danger">Ver Consultas</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title>Buscar e Agendar Consultas</title>
+</head>
+<body>
+<main class="container mt-4">
+    <h2>Buscar Horários Disponíveis</h2>
+
+    <form th:action="@{/agenda/filtrar}" method="get" class="mb-4">
+        <table class="table table-borderless align-middle w-auto">
+            <tr>
+                <td>
+                    <label for="inicio" class="form-label mb-1">Data e Hora Início:</label>
+                    <input type="datetime-local" id="inicio" name="inicio" class="form-control">
+                </td>
+                <td>
+                    <label for="fim" class="form-label mb-1">Data e Hora Fim:</label>
+                    <input type="datetime-local" id="fim" name="fim" class="form-control">
+                </td>
+                <td>
+                    <label for="medicoId" class="form-label mb-1">Médico:</label>
+                    <select id="medicoId" name="medicoId" class="form-select">
+                        <option value="">-- Todos os médicos --</option>
+                        <option th:each="medico : ${medicos}"
+                                th:value="${medico.id}"
+                                th:text="${medico.nome}"
+                                th:selected="${medico.id == medicoSelecionadoId}">
+                        </option>
+                    </select>
+                </td>
+                <td class="pt-4 align-bottom">
+                    <button type="submit" class="btn btn-outline-primary mt-3">Buscar</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <div th:if="${agendas != null} and ${agendas.size() > 0}">
+        <h3>Horários Encontrados</h3>
+        <table class="table table-bordered">
+            <thead>
+            <tr class="text-center">
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Médico</th>
+                <th>Ação</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="agenda : ${agendas}" class="text-center">
+                <td th:text="${#temporals.format(agenda.inicio, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${#temporals.format(agenda.fim, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${agenda.medico.nome}"></td>
+                <td>
+                    <div class="d-flex justify-content-center align-items-center gap-3">
+                        <form th:action="@{/consulta/form(tipo='agendamento', agendaId=${agenda.id})}" method="get" style="margin:0;">
+                            <input type="hidden" name="agendaId" th:value="${agenda.id}" />
+                            <button type="submit" class="btn btn-outline-success btn-sm">Agendar</button>
+                        </form>
+
+                        <form th:action="@{/agenda/editAgenda/{id}(id=${agenda.id})}" style="margin:0;">
+                            <input type="hidden" name="id" th:value="${agenda.id}" />
+                            <button type="submit" class="btn btn-outline-warning btn-sm">Editar</button>
+                        </form>
+
+                        <form th:action="@{/agenda/excluir}" method="post" th:object="${agenda}" style="margin:0;"
+                              onsubmit="return confirm('Tem certeza que deseja excluir este horário?');">
+                            <input type="hidden" name="id" th:value="${agenda.id}" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Excluir</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${agendas == null or agendas.size() == 0}">
+        <p>Nenhum horário disponível no momento.</p>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title> Formulário Paciente</title>
+</head>
+<body>
+
+    <main>
+
+        <h1>FORMULÁRIO DE PACIENTE</h1>
+        <form th:action="${paciente.id == null} ? @{/paciente/savePaciente} : @{/paciente/updatePaciente}" th:object="${paciente}" method="post">
+
+            <input type="hidden" th:field="*{id}">
+
+            <div class="col-md-1">
+                <label class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></label>
+                <input type="text" th:field="*{nome}" th:errorclass="is-invalid" placeholder="Nome" class="form-control">
+                <div class="invalid-feedback">
+                    Insira o Nome.
+                </div>
+            </div>
+            <p></p>
+            <div class="col-md-2">
+                <label class="invalid-feedback" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></label>
+                <input type="text" th:field="*{telefone}" th:errorclass="is-invalid" placeholder="Telefone" class="form-control">
+                <div class="invalid-feedback">
+                    Insira o Telefone
+                </div>
+            </div>
+            <p></p>
+
+            <input type="submit" value="Inserir">
+        </form>
+
+        <p></p>
+        <form th:action="@{/paciente/apresentarPaciente}" method="get">
+            <input type="submit" value="Retornar Lista de Pacientes">
+        </form>
+
+    </main>
+
+</body>
+</html>

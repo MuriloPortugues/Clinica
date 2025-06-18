@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+  <title> Lista Consultas</title>
+</head>
+<body class="container text-center mt-5">
+<main>
+<h1 class="text-danger">Acesso negado</h1>
+<p class="lead">Você não tem permissão para acessar esta página.</p>
+<a href="/" class="btn btn-primary mt-3">Voltar para a Home</a>
+</main>
+</body>
+</html>
