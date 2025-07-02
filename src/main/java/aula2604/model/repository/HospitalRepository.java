@@ -11,6 +11,4 @@ public class HospitalRepository {
     @PersistenceContext
     private EntityManager em;
 
-
-
 }

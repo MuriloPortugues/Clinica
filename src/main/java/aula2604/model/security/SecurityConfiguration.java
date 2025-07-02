@@ -1,9 +1,11 @@
 package aula2604.model.security;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
@@ -14,11 +16,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration //classe de configuração
 @EnableWebSecurity //indica ao Spring que serão definidas configurações personalizadas de segurança
 public class SecurityConfiguration {
+
+    @Autowired
+    UsuarioDetailsConfig usuarioDetailsConfig;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,6 +32,7 @@ public class SecurityConfiguration {
                 customizer ->
                     customizer
                             .requestMatchers("/login").permitAll()
+                            .requestMatchers("/paciente/form").permitAll()
                             .requestMatchers("/agenda/disponibilizar").hasAnyRole("MEDICO", "ADMIN")
                             .requestMatchers("/agenda/list").hasAnyRole("PACIENTE", "ADMIN", "MEDICO")
                             .requestMatchers("/paciente/apresentarPaciente").hasAnyRole("PACIENTE", "ADMIN")
@@ -48,25 +55,30 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user1 = User.withUsername("user")
-                .password(passwordEncoder().encode("123"))
-                .roles("USER")
-                .build();
-        UserDetails user2 = User.withUsername("paciente")
-                .password(passwordEncoder().encode("123"))
-                .roles("PACIENTE")
-                .build();
-        UserDetails user3 = User.withUsername("medico")
-                .password(passwordEncoder().encode("123"))
-                .roles("MEDICO")
-                .build();
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user1, user2, user3, admin);
+//        @Bean
+//        public InMemoryUserDetailsManager userDetailsService() {
+//            UserDetails user1 = User.withUsername("user")
+//                    .password(passwordEncoder().encode("123"))
+//                    .roles("USER")
+//                    .build();
+//            UserDetails user2 = User.withUsername("paciente")
+//                    .password(passwordEncoder().encode("123"))
+//                    .roles("PACIENTE")
+//                    .build();
+//            UserDetails user3 = User.withUsername("medico")
+//                    .password(passwordEncoder().encode("123"))
+//                    .roles("MEDICO")
+//                    .build();
+//            UserDetails admin = User.withUsername("admin")
+//                    .password(passwordEncoder().encode("admin"))
+//                    .roles("ADMIN")
+//                    .build();
+//            return new InMemoryUserDetailsManager(user1, user2, user3, admin);
+//        }
+
+    @Autowired
+    public void configureUserDetails(final AuthenticationManagerBuilder builder) throws Exception {
+        builder.userDetailsService(usuarioDetailsConfig).passwordEncoder(new BCryptPasswordEncoder());
     }
 
     /**

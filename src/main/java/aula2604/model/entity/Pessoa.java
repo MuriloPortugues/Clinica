@@ -18,6 +18,9 @@ public abstract class Pessoa {
     @NotBlank
     private String nome;
 
+    @OneToOne
+    private Usuario usuario;
+
     public Long getId() {
         return id;
     }
