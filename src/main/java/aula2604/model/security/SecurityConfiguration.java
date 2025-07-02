@@ -33,11 +33,12 @@ public class SecurityConfiguration {
                     customizer
                             .requestMatchers("/login").permitAll()
                             .requestMatchers("/paciente/form").permitAll()
+                            .requestMatchers("/paciente/apresentarPaciente").permitAll()
                             .requestMatchers("/agenda/disponibilizar").hasAnyRole("MEDICO", "ADMIN")
                             .requestMatchers("/agenda/list").hasAnyRole("PACIENTE", "ADMIN", "MEDICO")
                             .requestMatchers("/paciente/apresentarPaciente").hasAnyRole("PACIENTE", "ADMIN")
                             .requestMatchers("/medico/apresentarMedico").hasAnyRole("MEDICO", "ADMIN")
-                            .requestMatchers(HttpMethod.POST,"/pessoafisica/save").permitAll()
+                            .requestMatchers(HttpMethod.POST,"/paciente/savePaciente").permitAll()
                             .anyRequest() //define que a configuração é válida para qualquer requisição.
                             .authenticated() //define que o usuário precisa estar autenticado.
                 )

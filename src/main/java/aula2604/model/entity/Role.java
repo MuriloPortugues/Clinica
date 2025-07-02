@@ -10,21 +10,29 @@ import java.util.List;
 
 @Entity
 public class Role implements Serializable, GrantedAuthority {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    @Column(unique = true, nullable = false)
+    private String nome; // Ex: ROLE_ADMIN, ROLE_USER
 
     @ManyToMany(mappedBy = "roles")
-    private List<Usuario> usuarios;
+    private List<Usuario> usuarios = new ArrayList<>();
 
-    public Role(){ usuarios = new ArrayList<>();
+    public Role() {}
+
+    public Role(String nome) {
+        this.nome = nome; // Já deve vir formatado com "ROLE_" externamente
     }
+
     @Override
     public String getAuthority() {
         return nome;
     }
+
+    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -39,7 +47,7 @@ public class Role implements Serializable, GrantedAuthority {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        this.nome = nome; // Não há mais formatação aqui
     }
 
     public List<Usuario> getUsuarios() {

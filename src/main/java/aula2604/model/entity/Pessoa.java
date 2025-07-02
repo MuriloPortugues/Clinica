@@ -18,7 +18,7 @@ public abstract class Pessoa {
     @NotBlank
     private String nome;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Usuario usuario;
 
     public Long getId() {
@@ -35,6 +35,14 @@ public abstract class Pessoa {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }
 

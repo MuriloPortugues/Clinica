@@ -1,6 +1,7 @@
 package aula2604.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,11 +25,9 @@ public class Usuario implements Serializable, UserDetails {
     private List<Role> roles = new ArrayList<>();
 
     @Override
-    public List<Role> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
-    @OneToOne(mappedBy = "usuario")
-    Pessoa pessoa;
 
     @Override
     public String getPassword() {

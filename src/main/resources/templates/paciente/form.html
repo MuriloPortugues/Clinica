@@ -2,58 +2,67 @@
 <html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
-    <title> Formulário Paciente</title>
+    <title>Formulário de Paciente</title>
 </head>
 <body>
+<main class="container mt-5">
 
-    <main>
+    <div class="card shadow p-4">
+        <h2 class="mb-4 text-center">Cadastro de Paciente</h2>
 
-        <h1>FORMULÁRIO DE PACIENTE</h1>
-        <form th:action="${paciente.id == null} ? @{/paciente/savePaciente} : @{/paciente/updatePaciente}" th:object="${paciente}" method="post">
+        <div th:if="${param.cadastrado}">
+            <div class="alert alert-success">Usuário cadastrado com sucesso! Faça login.</div>
+        </div>
+
+        <form th:action="${paciente.id == null} ? @{/paciente/savePaciente} : @{/paciente/updatePaciente}"
+              th:object="${paciente}" method="post">
 
             <input type="hidden" th:field="*{id}">
 
-            <div class="col-md-1">
-                <label class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></label>
-                <input type="text" th:field="*{nome}" th:errorclass="is-invalid" placeholder="Nome" class="form-control">
-                <div class="invalid-feedback">
-                    Insira o Nome.
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nome" class="form-label">Nome *</label>
+                    <input type="text" id="nome" th:field="*{nome}" th:errorclass="is-invalid"
+                           placeholder="Digite o nome" class="form-control">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">
+                        Insira o Nome.
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="telefone" class="form-label">Telefone *</label>
+                    <input type="text" id="telefone" th:field="*{telefone}" th:errorclass="is-invalid"
+                           placeholder="Digite o telefone" class="form-control">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}">
+                        Insira o Telefone.
+                    </div>
                 </div>
             </div>
-            <p></p>
-            <div class="col-md-2">
-                <label class="invalid-feedback" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></label>
-                <input type="text" th:field="*{telefone}" th:errorclass="is-invalid" placeholder="Telefone" class="form-control">
-                <div class="invalid-feedback">
-                    Insira o Telefone
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="login" class="form-label">Usuário *</label>
+                    <input type="text" id="login" name="login" class="form-control" required placeholder="Digite o login">
                 </div>
+
+                <div class="col-md-4">
+                    <label for="password" class="form-label">Senha *</label>
+                    <input type="password" id="password" name="password" class="form-control" required placeholder="Digite a senha">
+                </div>
+
             </div>
 
-            <div class="mb-3">
-                <label for="login" class="form-label">Usuário *</label>
-                <input type="text" id="login" name="login" class="form-control" required>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary px-4">Salvar Paciente</button>
+                <a href="#" onclick="document.getElementById('formVoltar').submit()" class="btn btn-secondary ms-2">Ver Lista</a>
+                <a th:href="@{/hospital/login}" class="btn btn-outline-info ms-2">Página Login</a>
             </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Senha *</label>
-                <input type="password" id="password" name="password" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">Email *</label>
-                <input type="email" id="email" name="email" class="form-control" required>
-            </div>
-            <p></p>
-
-            <input type="submit" value="Inserir">
         </form>
+        <form id="formVoltar" th:action="@{/paciente/apresentarPaciente}" method="get" style="display: none;"></form>
 
-        <p></p>
-        <form th:action="@{/paciente/apresentarPaciente}" method="get">
-            <input type="submit" value="Retornar Lista de Pacientes">
-        </form>
 
-    </main>
+    </div>
 
+</main>
 </body>
 </html>

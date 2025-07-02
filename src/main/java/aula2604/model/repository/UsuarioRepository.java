@@ -28,6 +28,13 @@ public class UsuarioRepository {
         return resultList.isEmpty() ? null : resultList.get(0);
     }
 
+    public static String formatarRole(String nome) {
+        if (!nome.toUpperCase().startsWith("ROLE_")) {
+            return "ROLE_" + nome.toUpperCase();
+        }
+        return nome.toUpperCase();
+    }
+
     public void saveUsuario(Usuario usuario){
         em.persist(usuario);
     }
