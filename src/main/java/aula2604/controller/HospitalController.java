@@ -3,6 +3,7 @@ package aula2604.controller;
 import aula2604.model.entity.Role;
 import aula2604.model.entity.Usuario;
 import aula2604.model.repository.HospitalRepository;
+import aula2604.model.repository.RoleRepository;
 import aula2604.model.repository.UsuarioRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
@@ -28,6 +29,8 @@ public class HospitalController {
 
     @Autowired
     HospitalRepository repositoryHospital;
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     UsuarioRepository repositoryUsuario;
@@ -43,8 +46,9 @@ public class HospitalController {
 
     @GetMapping("/login")
         public ModelAndView login(ModelMap model) {
+        boolean existeAdmin = roleRepository.existsRoleAdmin();
+        model.addAttribute("existeRoleAdmin", existeAdmin);
         return new ModelAndView("/hospital/login", model);
     }
-
 
 }

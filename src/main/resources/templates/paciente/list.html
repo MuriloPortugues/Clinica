@@ -23,7 +23,6 @@
             <th>Nome</th>
             <th>Telefone</th>
             <th>Usuário</th>
-            <th>Senha (criptografada)</th>
             <th>Perfis</th>
             <th>Editar</th>
             <th>Excluir</th>
@@ -35,7 +34,6 @@
             <td th:text="${p.nome}"> </td>
             <td th:text="${p.telefone}"> </td>
             <td th:text="${p.usuario != null ? p.usuario.login : 'N/A'}"> </td>
-            <td th:text="${p.usuario != null ? p.usuario.password : 'N/A'}"> </td>
             <td>
                 <ul>
                     <li th:each="role : ${p.usuario.roles}"

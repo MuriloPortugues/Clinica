@@ -6,9 +6,11 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @Repository
 public class UsuarioRepository {
 
@@ -18,6 +20,7 @@ public class UsuarioRepository {
     public Usuario usuario(Long id){
         return em.find(Usuario.class, id);
     }
+
 
     public Usuario usuario(String login) {
         String jpql = "SELECT u FROM Usuario u WHERE u.login = :login";
@@ -34,6 +37,7 @@ public class UsuarioRepository {
         }
         return nome.toUpperCase();
     }
+
 
     public void saveUsuario(Usuario usuario){
         em.persist(usuario);
@@ -61,6 +65,11 @@ public class UsuarioRepository {
         TypedQuery<Usuario> query = em.createQuery(jpql, Usuario.class);
         query.setParameter("nome", nome);
         return query.getResultList();
+    }
+
+    public long count() {
+        return em.createQuery("SELECT COUNT(u) FROM Usuario u", Long.class)
+                .getSingleResult();
     }
 
 }

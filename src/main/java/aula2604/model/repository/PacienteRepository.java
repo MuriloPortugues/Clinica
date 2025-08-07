@@ -1,39 +1,67 @@
 package aula2604.model.repository;
 
 import aula2604.model.entity.Paciente;
-import jakarta.persistence.Query;
-import org.springframework.stereotype.Repository;
-import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+@Transactional
 @Repository
 public class PacienteRepository {
+
     @PersistenceContext
     private EntityManager em;
 
-    public void savePaciente(Paciente paciente){
+
+    public void savePaciente(Paciente paciente) {
         em.persist(paciente);
     }
-    public Paciente paciente(Long id){
-        return em.find(Paciente.class, id);
+
+    // Buscar paciente por id com endereços e cidades carregados (fetch join)
+    public Paciente paciente(Long id) {
+        String jpql = "SELECT p FROM Paciente p " +
+                "LEFT JOIN FETCH p.enderecos e " +
+                "LEFT JOIN FETCH e.cidade c " +
+                "WHERE p.id = :id";
+
+        TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
+        query.setParameter("id", id);
+
+        List<Paciente> resultados = query.getResultList();
+
+        // Pode não encontrar paciente com endereços, então retorna null se vazio
+        return resultados.isEmpty() ? null : resultados.get(0);
     }
+
     public List<Paciente> pacientes() {
-        Query query = em.createQuery("from Paciente");
-        return query.getResultList();
+        return em.createQuery("SELECT DISTINCT p FROM Paciente p LEFT JOIN FETCH p.enderecos", Paciente.class)
+                .getResultList();
     }
-    public void removePaciente(Long id){
+
+    public void removePaciente(Long id) {
         Paciente p = em.find(Paciente.class, id);
-        em.remove(p);
+        if (p != null) {
+            em.remove(p);
+        }
     }
-    public void updatePaciente(Paciente paciente){
+
+    public void updatePaciente(Paciente paciente) {
         em.merge(paciente);
     }
 
     public List<Paciente> buscarPorNome(String nome) {
-        String jpql = "SELECT p FROM Paciente p WHERE LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))";
-        Query query = em.createQuery(jpql, Paciente.class);
+        String jpql = "SELECT DISTINCT p FROM Paciente p " +
+                "LEFT JOIN FETCH p.enderecos e " +
+                "WHERE LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))";
+
+        TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
         query.setParameter("nome", nome);
+
         return query.getResultList();
     }
+
 }

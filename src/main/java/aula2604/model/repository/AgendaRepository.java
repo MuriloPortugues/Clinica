@@ -10,12 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Transactional
 @Repository
 public class AgendaRepository {
     @PersistenceContext
     private EntityManager em;
 
-    @Transactional
+
     public void saveAgenda(Agenda agenda) {
         em.persist(agenda);
     }
@@ -24,12 +25,12 @@ public class AgendaRepository {
         return em.find(Agenda.class, id);
     }
 
-    @Transactional
+
     public void updateAgenda(Agenda agenda) {
         em.merge(agenda);
     }
 
-    @Transactional
+
     public void removeAgenda(Long id) {
         Agenda a = em.find(Agenda.class, id);
         em.remove(a);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
     <title>Formulário de Paciente</title>
@@ -19,6 +19,7 @@
 
             <input type="hidden" th:field="*{id}">
 
+            <!-- Nome e Telefone primeiro -->
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="nome" class="form-label">Nome *</label>
@@ -39,6 +40,83 @@
                 </div>
             </div>
 
+            <!-- Estado e Cidade -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="estado" class="form-label">Estado *</label>
+                    <select id="estado" th:field="*{enderecos[0].estado.id}" class="form-control">
+                        <option value="">Selecione um estado</option>
+                        <option th:each="estado : ${estados}"
+                                th:value="${estado.id}"
+                                th:text="${estado.nome}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="cidade" class="form-label">Cidade *</label>
+                    <select id="cidade" th:field="*{enderecos[0].cidade.id}" class="form-select" required>
+                        <option value="">Selecione uma cidade</option>
+                        <option th:each="cidade : ${cidades}"
+                                th:value="${cidade.id}"
+                                th:text="${cidade.nome}"></option>
+                    </select>
+                </div>
+                <script>
+                    document.getElementById("estado").addEventListener("change", function () {
+                        const estadoId = this.value;
+                        const cidadeSelect = document.getElementById("cidade");
+
+                        cidadeSelect.innerHTML = "<option>Carregando...</option>";
+
+                        fetch("/paciente/cidades?estadoId=" + estadoId)
+                            .then(response => response.json())
+                            .then(data => {
+                                cidadeSelect.innerHTML = "<option value=''>Selecione a cidade</option>";
+                                data.forEach(cidade => {
+                                    const option = document.createElement("option");
+                                    option.value = cidade.id;
+                                    option.text = cidade.nome;
+                                    cidadeSelect.appendChild(option);
+                                });
+                            })
+                            .catch(error => {
+                                cidadeSelect.innerHTML = "<option>Erro ao carregar</option>";
+                                console.error("Erro:", error);
+                            });
+                    });
+                </script>
+            </div>
+
+            <!-- Endereço, Número, Bairro -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="endereco" class="form-label">Endereço *</label>
+                    <input type="text" id="endereco" th:field="*{enderecos[0].logradouro}"
+                           th:errorclass="is-invalid" placeholder="Digite o endereço" class="form-control">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('enderecos[0].logradouro')}"
+                         th:errors="*{enderecos[0].logradouro}">
+                        Insira o Endereço.
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="numero" class="form-label">Número *</label>
+                    <input type="text" id="numero" th:field="*{enderecos[0].numero}"
+                           placeholder="Número" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="bairro" class="form-label">Bairro *</label>
+                    <input type="text" id="bairro" th:field="*{enderecos[0].bairro}"
+                           th:errorclass="is-invalid" placeholder="Digite o bairro" class="form-control">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('enderecos[0].bairro')}"
+                         th:errors="*{enderecos[0].bairro}">
+                        Insira o Bairro.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login e Senha -->
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label for="login" class="form-label">Usuário *</label>
@@ -49,20 +127,33 @@
                     <label for="password" class="form-label">Senha *</label>
                     <input type="password" id="password" name="password" class="form-control" required placeholder="Digite a senha">
                 </div>
+            </div>
 
+            <!-- Seleção de Perfis (visível apenas para Admin) -->
+            <div class="row mb-3" sec:authorize="hasRole('ADMIN')">
+                <div class="col-md-3">
+                    <label for="roles" class="form-label">Perfis</label>
+                    <select multiple id="roles" name="roles" class="form-select">
+                        <option th:each="role : ${roles}"
+                                th:value="${role.id}"
+                                th:text="${role.nome}"
+                                th:selected="${paciente.usuario != null} ? ${paciente.usuario.roles.contains(role)} : false">
+                        </option>
+                    </select>
+                    <small class="form-text text-muted">Segure Ctrl (ou Cmd no Mac) para selecionar múltiplos.</small>
+                </div>
             </div>
 
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary px-4">Salvar Paciente</button>
-                <a href="#" onclick="document.getElementById('formVoltar').submit()" class="btn btn-secondary ms-2">Ver Lista</a>
                 <a th:href="@{/hospital/login}" class="btn btn-outline-info ms-2">Página Login</a>
             </div>
         </form>
+
         <form id="formVoltar" th:action="@{/paciente/apresentarPaciente}" method="get" style="display: none;"></form>
 
-
     </div>
-
 </main>
+
 </body>
 </html>

@@ -32,6 +32,9 @@ public class SecurityConfiguration {
                 customizer ->
                     customizer
                             .requestMatchers("/login").permitAll()
+                            .requestMatchers("/paciente/cidades").permitAll()
+                            .requestMatchers("/paciente/estados").permitAll()
+                            .requestMatchers("/estados").permitAll()
                             .requestMatchers("/paciente/form").permitAll()
                             .requestMatchers("/paciente/apresentarPaciente").permitAll()
                             .requestMatchers("/agenda/disponibilizar").hasAnyRole("MEDICO", "ADMIN")

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title>Home</title>
+</head>
+
+    <body>
+    <main class="container my-5">
+
+        <h2>Lista de Roles</h2>
+
+        <!-- Administração de Perfis -->
+
+        <br>
+
+        <table class="table" border="1">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Perfil</th>
+                <th>Editar</th>
+                <th>Excluir</th>
+                <th>Consultas</th>
+            </tr>
+            </thead>
+            <tr th:each="r : ${roles}">
+                <td th:text="${r.id}"> </td>
+                <td th:text="${r.nome}"> </td>
+                <td>
+                    <a th:href="@{/admin/editarRole/{id}(id=${r.id})}">
+                        <button type="button">Editar</button>
+                    </a>
+                </td>
+                <td>
+                    <a onclick="return window.confirm('Tem certeza que deseja excluir este registro?')"
+                       th:href="@{/admin/removerRole/{id}(id=${r.id})}">
+                        <button type="submit">Excluir</button>
+                    </a>
+                </td>
+                <td>
+                    <a th:href="@{/admin/apresentarRole/{id}(id=${r.id})}">
+                        <button type="button">Consultas</button>
+                    </a>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Botão para inserir nova Role -->
+        <p></p>
+        <form th:action="@{/admin/formRole}" method="get">
+            <input type="submit" value="Inserir Novo Perfil">
+        </form>
+
+        <p></p>
+
+        <div style="margin-bottom: 10px;">
+            <form th:action="@{/hospital/home}" method="get">
+                <input type="submit" value="Home">
+            </form>
+        </div>
+
+
+    </main>
+    </body>
+
+</html>

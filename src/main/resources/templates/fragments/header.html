@@ -58,9 +58,15 @@
 
 
                 <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
-                    <span class="text-white me-3">
-                        Olá, <span sec:authentication="name"></span>
-                    </span>
+    <span class="text-white me-3">
+        Olá, <span sec:authentication="name"></span>
+    </span>
+
+                    <!-- Painel do Admin (visível apenas para ROLE_ADMIN) -->
+                    <a sec:authorize="hasRole('ADMIN')" href="/admin/apresentarRole" class="btn btn-warning me-3">
+                        <i class="bi bi-speedometer2"></i> Painel do Admin
+                    </a>
+
                     <form th:action="@{/logout}" method="post">
                         <button type="submit" class="btn btn-outline-light">Sair</button>
                     </form>

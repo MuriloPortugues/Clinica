@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+
+<head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
+    <title> Formulário Médico</title>
+</head>
+<body>
+    <main>
+
+        <h2>Cadastrar Novo Perfil (Role)</h2>
+
+        <div th:if="${param.cadastrado}">
+            <div class="alert alert-success">Perfil cadastrado com sucesso!</div>
+        </div>
+
+        <form th:action="@{/admin/saveRole}" th:object="${role}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome do Perfil</label>
+                <input type="text" th:field="*{nome}" class="form-control" id="nome" placeholder="Ex: ROLE_ADMIN" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salvar</button>
+
+        </form>
+        <form th:action="@{/admin/apresentarRole}" method="get">
+            <input type="submit" value="Lista de Perfis">
+        </form>
+    </main>
+</body>
+</html>
