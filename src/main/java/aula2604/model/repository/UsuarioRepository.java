@@ -40,7 +40,11 @@ public class UsuarioRepository {
 
 
     public void saveUsuario(Usuario usuario){
+        if (usuario.getId() == null) {
         em.persist(usuario);
+    } else {
+        em.merge(usuario);
+    }
     }
 
     public List<Usuario> usuarios() {

@@ -2,31 +2,58 @@
 <html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
-    <title> Formulário Médico</title>
-</head>
-<body>
-    <main>
+    <title>Formulário Médico</title>
 
-        <h2>Cadastrar Novo Perfil (Role)</h2>
+    <script>
+        function atualizarCampoFinal() {
+            const sufixo = document.getElementById('sufixo').value.replace(/\s/g, '').toUpperCase();
+            document.getElementById('nomeCompleto').value = 'ROLE_' + sufixo;
+        }
+
+        // Garante que o campo escondido seja atualizado ao carregar a página
+        window.onload = function() {
+            atualizarCampoFinal();
+        }
+    </script>
+</head>
+
+<body>
+<main class="container mt-5">
+    <div th:if="${erro}" class="alert alert-danger text-center" th:text="${erro}"></div>
+
+    <div class="btn btn-light border rounded p-4 mx-auto d-block" style="max-width: 550px;">
+
+        <h2 class="text-center fw-bold text-primary mb-4 fs-3">Cadastrar Novo Perfil (Role)</h2>
 
         <div th:if="${param.cadastrado}">
-            <div class="alert alert-success">Perfil cadastrado com sucesso!</div>
+            <div class="alert alert-success text-center">Perfil cadastrado com sucesso!</div>
         </div>
 
-        <form th:action="@{/admin/saveRole}" th:object="${role}" method="post">
-            <input type="hidden" th:field="*{id}"/>
+        <form th:action="${role.id == null} ? @{/admin/saveRole} : @{/admin/updateRole}"
+              th:object="${role}" method="post">
+
+            <input type="hidden" th:field="*{id}" />
 
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome do Perfil</label>
-                <input type="text" th:field="*{nome}" class="form-control" id="nome" placeholder="Ex: ROLE_ADMIN" required>
+                <div class="input-group">
+                    <span class="input-group-text">ROLE_</span>
+                    <input type="text"
+                           id="nome"
+                           th:field="*{nome}"
+                           class="form-control"
+                           placeholder="Ex: USER"
+                           required />
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Salvar</button>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a th:href="@{/admin/apresentarRole}" class="btn btn-outline-info ms-2">Retornar à lista</a>
+            </div>
+        </form>
+    </div>
 
-        </form>
-        <form th:action="@{/admin/apresentarRole}" method="get">
-            <input type="submit" value="Lista de Perfis">
-        </form>
-    </main>
+</main>
 </body>
 </html>

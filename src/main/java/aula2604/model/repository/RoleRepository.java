@@ -37,6 +37,10 @@ public class RoleRepository {
         }
     }
 
+    public void updateRole(Role role) {
+        em.merge(role);
+    }
+
     public Role findById(Long id) {
         return em.find(Role.class, id);
     }

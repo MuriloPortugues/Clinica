@@ -73,27 +73,76 @@ public class AdminController {
     public Object save(@Valid @ModelAttribute("role") Role role, BindingResult result, ModelMap model) {
 
         if (result.hasErrors()) {
-            return "admin/formRole";
+            // mantém o objeto role e retorna para o formulário
+            model.addAttribute("role", role);
+            return "hospital/formRole";
         }
 
-        // Verifica se já existe uma Role com o mesmo nome
+        if (role.getNome() != null) {
+            String nomeCorrigido = role.getNome().replace(",", "").trim();
+
+            if (!nomeCorrigido.toUpperCase().startsWith("ROLE_")) {
+                role.setNome("ROLE_" + nomeCorrigido.toUpperCase());
+            } else {
+                role.setNome(nomeCorrigido.toUpperCase());
+            }
+        }
+
         Role existente = repositoryRole.findByNome(role.getNome());
         if (existente != null) {
             model.addAttribute("erro", "Já existe um perfil com esse nome.");
-            return "admin/formRole";
+            model.addAttribute("role", role);  // importante para preencher o formulário
+            return "hospital/formRole";
         }
 
         repositoryRole.save(role);
         return new ModelAndView("redirect:/admin/formRole?cadastrado=true");
-
     }
 
+
+
     @GetMapping("/editarRole/{id}")
-    public ModelAndView editarRole(@PathVariable Long id) {
+    public ModelAndView editar(@PathVariable Long id, ModelMap model) {
         Role role = repositoryRole.findById(id);
-        ModelAndView mv = new ModelAndView("hospital/formRole");
-        mv.addObject("role", role);
-        return mv;
+        if (role == null) {
+            return new ModelAndView("redirect:/hospital/formRole?erro=true");
+        }
+
+        // Só exibe o sufixo no campo, mas salva corretamente depois
+        String sufixo = role.getNome().replace("ROLE_", "");
+        role.setNome(sufixo);
+
+        model.addAttribute("role", role);
+        return new ModelAndView("hospital/formRole", model);
+    }
+
+    @PostMapping("/updateRole")
+    public ModelAndView updateRole(Role role) {
+        // Remove vírgulas indesejadas e espaços
+        String nomeCorrigido = role.getNome().replace(",", "").trim();
+
+        // Garante o prefixo ROLE_
+        if (!nomeCorrigido.toUpperCase().startsWith("ROLE_")) {
+            role.setNome("ROLE_" + nomeCorrigido.toUpperCase());
+        } else {
+            role.setNome(nomeCorrigido.toUpperCase());
+        }
+
+        repositoryRole.updateRole(role);
+        return new ModelAndView("redirect:/admin/apresentarRole");
+    }
+
+    @GetMapping("/excluirRole/{id}")
+    public ModelAndView excluirRole(@PathVariable("id") Long id, ModelMap model) {
+        if (repositoryRole.isRoleInUse(id)) {
+            model.addAttribute("erro", "Não é possível excluir. Perfil está em uso por um ou mais usuários.");
+        } else {
+            repositoryRole.deletarRole(id);
+            model.addAttribute("msg", "Perfil excluído com sucesso.");
+        }
+
+        model.addAttribute("roles", repositoryRole.roles());
+        return new ModelAndView("hospital/role", model);
     }
 }
 

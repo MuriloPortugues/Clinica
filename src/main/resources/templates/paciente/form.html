@@ -8,7 +8,9 @@
 <main class="container mt-5">
 
     <div class="card shadow p-4">
-        <h2 class="mb-4 text-center">Cadastro de Paciente</h2>
+        <h2 class="text-center fw-bold text-primary mb-4 fs-3">Cadastro de Paciente</h2>
+
+        <div th:if="${erro}" class="alert alert-danger" th:text="${erro}"></div>
 
         <div th:if="${param.cadastrado}">
             <div class="alert alert-success">Usuário cadastrado com sucesso! Faça login.</div>
@@ -127,6 +129,8 @@
                     <label for="password" class="form-label">Senha *</label>
                     <input type="password" id="password" name="password" class="form-control" required placeholder="Digite a senha">
                 </div>
+
+
             </div>
 
             <!-- Seleção de Perfis (visível apenas para Admin) -->
@@ -143,6 +147,7 @@
                     <small class="form-text text-muted">Segure Ctrl (ou Cmd no Mac) para selecionar múltiplos.</small>
                 </div>
             </div>
+
 
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary px-4">Salvar Paciente</button>

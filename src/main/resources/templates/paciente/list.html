@@ -2,83 +2,74 @@
 <html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
-    <title>Lista Pacientes</title>
+    <title>Lista de Pacientes</title>
 </head>
+
 <body>
 <main>
-    <h2>Lista de Pacientes</h2>
+    <div class="container mt-5">
+        <div class="card shadow p-4 mx-auto" style="max-width: 900px;">
+            <h2 class="text-center fw-bold text-primary mb-4 fs-3">Lista de Pacientes</h2>
 
-    <!-- Formulário de pesquisa por nome -->
-    <form th:action="@{/paciente/buscarPorNome}" method="get">
-        <input type="text" name="nome" placeholder="Nome do paciente" required>
-        <button type="submit">Buscar</button>
-    </form>
+            <!-- Formulário de pesquisa -->
+            <form th:action="@{/paciente/buscarPorNome}" method="get" class="row g-2 mb-4">
+                <div class="col-md-9">
+                    <input type="text" name="nome" class="form-control" placeholder="Nome do paciente" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                </div>
+            </form>
 
-    <br>
+            <!-- Tabela de pacientes -->
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-primary text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Usuário</th>
+                        <th>Perfis</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${pacientes}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.nome}"></td>
+                        <td th:text="${p.telefone}"></td>
+                        <td th:text="${p.usuario != null ? p.usuario.login : 'N/A'}"></td>
+                        <td>
+                            <ul class="list-unstyled mb-0">
+                                <li th:each="role : ${p.usuario.roles}" th:text="${role.nome}"></li>
+                            </ul>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a th:href="@{/paciente/editPaciente/{id}(id=${p.id})}" class="btn btn-warning btn-sm">Editar</a>
+                                <a th:href="@{/paciente/removePaciente/{id}(id=${p.id})}"
+                                   onclick="return confirm('Tem certeza que deseja excluir este registro?')"
+                                   class="btn btn-danger btn-sm">Excluir</a>
+                                <a th:href="@{/consulta/consultasPorPaciente/{id}(id=${p.id})}" class="btn btn-info btn-sm">Consultas</a>
+                                <a th:href="@{/medico/form}" class="btn btn-info btn-sm">Medico</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-    <table class="table" border="1">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Nome</th>
-            <th>Telefone</th>
-            <th>Usuário</th>
-            <th>Perfis</th>
-            <th>Editar</th>
-            <th>Excluir</th>
-            <th>Consultas</th>
-        </tr>
-        </thead>
-        <tr th:each="p : ${pacientes}">
-            <td th:text="${p.id}"> </td>
-            <td th:text="${p.nome}"> </td>
-            <td th:text="${p.telefone}"> </td>
-            <td th:text="${p.usuario != null ? p.usuario.login : 'N/A'}"> </td>
-            <td>
-                <ul>
-                    <li th:each="role : ${p.usuario.roles}"
-                        th:text="${role.nome}"></li>
-                </ul>
-            </td>
-            <td>
-                <a th:href="@{/paciente/editPaciente/{id}(id=${p.id})}">
-                    <button type="button">Editar</button>
-                </a>
-            </td>
-            <td>
-                <a onclick="return window.confirm('Tem certeza que deseja excluir este registro?')"
-                   th:href="@{/paciente/removePaciente/{id}(id=${p.id})}">
-                    <button type="submit">Excluir</button>
-                </a>
-            </td>
-            <td>
-                <a th:href="@{/consulta/consultasPorPaciente/{id}(id=${p.id})}">
-                    <button type="button">Consultas</button>
-                </a>
-            </td>
-        </tr>
-    </table>
-
-    <!-- Botão para inserir novo paciente -->
-    <p></p>
-    <form th:action="@{/paciente/form}" method="get">
-        <input type="submit" value="Inserir Novo Paciente">
-    </form>
-
-    <p></p>
-
-    <div style="margin-bottom: 10px;">
-        <form th:action="@{/hospital/home}" method="get">
-            <input type="submit" value="Home">
-        </form>
+            <!-- Botões de ações gerais -->
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{/paciente/form}" class="btn btn-success">Inserir Novo Paciente</a>
+                <div>
+                    <a th:href="@{/hospital/home}" class="btn btn-secondary me-2">Home</a>
+                    <a th:href="@{/paciente/apresentarPaciente}" class="btn btn-primary">Listar</a>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div>
-        <form th:action="@{/paciente/apresentarPaciente}" method="get">
-            <input type="submit" value="Listar">
-        </form>
-    </div>
-
 </main>
 </body>
 </html>

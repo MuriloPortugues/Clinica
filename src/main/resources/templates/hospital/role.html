@@ -5,63 +5,51 @@
     <title>Home</title>
 </head>
 
-    <body>
-    <main class="container my-5">
+<body>
+<main class="container my-5">
+    <div class="btn btn-light border rounded p-4 mx-auto d-block" style="max-width: 550px;">
+        <div th:if="${erro}" class="alert alert-danger text-center" th:text="${erro}"></div>
+        <div th:if="${msg}" class="alert alert-success text-center" th:text="${msg}"></div>
 
-        <h2>Lista de Roles</h2>
+        <h2 class="text-center fw-bold text-primary mb-4 fs-3">Lista de Perfil de Acesso</h2>
 
-        <!-- Administração de Perfis -->
-
-        <br>
-
-        <table class="table" border="1">
-            <thead>
+        <table class="table table-bordered table-hover text-center align-middle">
+            <thead class="table-secondary">
             <tr>
-                <th>Id</th>
+                <th>ID</th>
                 <th>Perfil</th>
                 <th>Editar</th>
                 <th>Excluir</th>
-                <th>Consultas</th>
             </tr>
             </thead>
+            <tbody>
             <tr th:each="r : ${roles}">
-                <td th:text="${r.id}"> </td>
-                <td th:text="${r.nome}"> </td>
+                <td th:text="${r.id}"></td>
+                <td th:text="${r.nome}"></td>
                 <td>
-                    <a th:href="@{/admin/editarRole/{id}(id=${r.id})}">
-                        <button type="button">Editar</button>
-                    </a>
+                    <a th:href="@{/admin/editarRole/{id}(id=${r.id})}" class="btn btn-sm btn-warning">Editar</a>
+
                 </td>
                 <td>
-                    <a onclick="return window.confirm('Tem certeza que deseja excluir este registro?')"
-                       th:href="@{/admin/removerRole/{id}(id=${r.id})}">
-                        <button type="submit">Excluir</button>
-                    </a>
-                </td>
-                <td>
-                    <a th:href="@{/admin/apresentarRole/{id}(id=${r.id})}">
-                        <button type="button">Consultas</button>
-                    </a>
+                    <a th:href="@{/admin/excluirRole/{id}(id=${r.id})}"
+                       class="btn btn-sm btn-danger"
+                       onclick="return window.confirm('Tem certeza que deseja excluir este registro?')">Excluir</a>
                 </td>
             </tr>
+            </tbody>
         </table>
 
-        <!-- Botão para inserir nova Role -->
-        <p></p>
-        <form th:action="@{/admin/formRole}" method="get">
-            <input type="submit" value="Inserir Novo Perfil">
-        </form>
+        <div class="d-flex justify-content-between mt-4">
+            <form th:action="@{/admin/formRole}" method="get">
+                <button class="btn btn-success">➕ Inserir Novo Perfil</button>
+            </form>
 
-        <p></p>
-
-        <div style="margin-bottom: 10px;">
             <form th:action="@{/hospital/home}" method="get">
-                <input type="submit" value="Home">
+                <button class="btn btn-outline-secondary">🏠 Home</button>
             </form>
         </div>
 
-
-    </main>
-    </body>
-
+    </div>
+</main>
+</body>
 </html>

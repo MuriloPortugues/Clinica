@@ -84,9 +84,17 @@ public class PacienteController {
                                @RequestParam String login,
                                @RequestParam String password) {
 
+        ModelAndView mv = new ModelAndView("/paciente/form");
+        mv.addObject("paciente", paciente);
+
+        // Verifica erros de validação do formulário
         if (result.hasErrors()) {
-            ModelAndView mv = new ModelAndView("/paciente/form");
-            mv.addObject("paciente", paciente);
+            return mv;
+        }
+
+        // Verifica se já existe um usuário com esse login
+        if (repositoryUsuario.usuario(login) != null) {
+            mv.addObject("erro", "Usuário já existe");
             return mv;
         }
 
@@ -102,7 +110,6 @@ public class PacienteController {
 
         // Verifica se é o primeiro usuário
         long totalUsuarios = repositoryUsuario.count();
-
         if (totalUsuarios == 0) {
             usuario.getRoles().add(rolePaciente);
             usuario.getRoles().add(roleAdmin);
@@ -116,18 +123,19 @@ public class PacienteController {
         // Associa o usuário ao paciente
         paciente.setUsuario(usuario);
 
-        // Associa o paciente a cada endereço
+        // Associa paciente aos endereços
         if (paciente.getEnderecos() != null) {
             for (Endereco endereco : paciente.getEnderecos()) {
-                endereco.setPessoa(paciente); // isso garante que o pessoa_id seja populado
+                endereco.setPessoa(paciente);
             }
         }
 
-        // Salva o paciente (junto com os endereços, se CascadeType.ALL estiver configurado)
+        // Salva o paciente
         repositoryPaciente.savePaciente(paciente);
 
         return new ModelAndView("redirect:/paciente/form?cadastrado=true");
     }
+
 
 
     @GetMapping("/removePaciente/{id}")
@@ -138,15 +146,74 @@ public class PacienteController {
 
     @GetMapping("/editPaciente/{id}")
     public ModelAndView editPaciente(@PathVariable("id") Long id, ModelMap model) {
-        model.addAttribute("paciente", repositoryPaciente.paciente(id));
+        Paciente paciente = repositoryPaciente.paciente(id);
+
+        if (paciente == null) {
+            return new ModelAndView("redirect:/paciente/apresentarPaciente");
+        }
+
+        model.addAttribute("paciente", paciente);
+        model.addAttribute("roles", roleRepository.roles()); // carrega todos os roles disponíveis
+
+        // Também carregue estados e cidades se o formulário usar
+        model.addAttribute("estados", estadoRepository.findAll());
+        model.addAttribute("cidades", cidadeRepository.findAll());
+
+
         return new ModelAndView("/paciente/form", model);
     }
 
     @PostMapping("/updatePaciente")
-    public ModelAndView updatePaciente(Paciente paciente) {
-        repositoryPaciente.updatePaciente(paciente);
+    public ModelAndView updatePaciente(
+            @ModelAttribute Paciente paciente,
+            @RequestParam(value = "roles", required = false) List<Long> roleIds) {
+
+        // Carregar o paciente e o usuário do banco (para evitar sobrescrever dados importantes)
+        Paciente pacienteExistente = repositoryPaciente.paciente(paciente.getId());
+        if (pacienteExistente == null) {
+            return new ModelAndView("redirect:/paciente/apresentarPaciente");
+        }
+
+        Usuario usuario = pacienteExistente.getUsuario();
+
+        if (usuario == null) {
+            // Se não tiver usuário associado, criar um novo
+            usuario = new Usuario();
+        }
+
+        // Atualiza dados básicos
+        pacienteExistente.setNome(paciente.getNome());
+        pacienteExistente.setTelefone(paciente.getTelefone());
+
+        // Atualiza os endereços com segurança para evitar erro de orphanRemoval
+        pacienteExistente.getEnderecos().clear();
+        if (paciente.getEnderecos() != null) {
+            for (Endereco endereco : paciente.getEnderecos()) {
+                endereco.setPessoa(pacienteExistente); // importante se relação é bidirecional
+                pacienteExistente.getEnderecos().add(endereco);
+            }
+        }
+
+        // Atualiza as roles do usuário
+        List<Role> rolesSelecionadas = new ArrayList<>();
+        if (roleIds != null) {
+            for (Long id : roleIds) {
+                Role role = roleRepository.findById(id);
+                if (role != null) {
+                    rolesSelecionadas.add(role);
+                }
+            }
+        }
+        usuario.setRoles(rolesSelecionadas);
+
+        // Persistência
+        repositoryUsuario.saveUsuario(usuario); // ou updateUsuario
+        pacienteExistente.setUsuario(usuario);
+        repositoryPaciente.updatePaciente(pacienteExistente);
+
         return new ModelAndView("redirect:/paciente/apresentarPaciente");
     }
+
 
     @GetMapping("/buscarPorNome")
     public ModelAndView buscarPorNome(@RequestParam("nome") String nome, ModelMap model) {
