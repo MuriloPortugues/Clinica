@@ -2,38 +2,43 @@
 <html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
-    <title> Formulário Médico</title>
+    <title>Formulário Médico</title>
 </head>
+
 <body>
-    <main>
-        <h1>FORMULÁRIO DE MÉDICO</h1>
-        <form th:action="${medico.id == null} ? @{/medico/saveMedico} : @{/medico/updateMedico}" th:object="${medico}" method="post">
-            <input type="hidden" th:field="*{id}">
-            <div class="col-md-1">
-                <label class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></label>
-                <input type="text" th:field="*{nome}" th:errorclass="is-invalid" placeholder="Nome" class="form-control">
-                <div class="invalid-feedback">
-                    Insira o Nome.
+<main class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="text-center fw-bold text-primary mb-4 fs-2">Cadastro de Médico</h2>
+
+        <form th:action="${medico.id == null} ? @{/medico/saveMedico} : @{/medico/updateMedico}"
+              th:object="${medico}" method="post">
+            <input type="hidden" name="pacienteId" th:value="${pacienteId}"/>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" th:field="*{nome}" id="nome"
+                           th:errorclass="is-invalid" placeholder="Nome completo"
+                           class="form-control">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">Insira o Nome</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="crm" class="form-label">CRM</label>
+                    <input type="text" th:field="*{crm}" id="crm"
+                           th:errorclass="is-invalid" placeholder="Número do CRM"
+                           class="form-control">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('crm')}" th:errors="*{crm}">Insira o CRM</div>
                 </div>
             </div>
-            <p></p>
 
-            <div class="col-md-2">
-                <label class="invalid-feedback" th:if="${#fields.hasErrors('crm')}" th:errors="*{crm}"></label>
-                <input type="text" th:field="*{crm}" th:errorclass="is-invalid" placeholder="CRM" class="form-control">
-                <div class="invalid-feedback">
-                    Insira o CRM.
-                </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-success">Salvar Médico</button>
+                <a th:href="@{/medico/apresentarMedico}" class="btn btn-secondary ms-2">Lista de Médicos</a>
+                <a th:href="@{/paciente/apresentarPaciente}" class="btn btn-outline-primary ms-2">Voltar para Pacientes</a>
             </div>
-            <p></p>
-
-
-            <input type="submit" value="Enviar">
         </form>
-        <p></p>
-        <form th:action="@{/medico/apresentarMedico}" method="get">
-            <input type="submit" value="Lista de Médicos">
-        </form>
-    </main>
+    </div>
+</main>
 </body>
 </html>

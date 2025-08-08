@@ -4,6 +4,8 @@ import aula2604.model.entity.*;
 import aula2604.model.repository.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -74,7 +77,28 @@ public class PacienteController {
 
     @GetMapping("/apresentarPaciente")
     public ModelAndView listarPaciente(ModelMap model) {
-        model.addAttribute("pacientes", repositoryPaciente.pacientes());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String login = auth.getName();
+
+        // Verifica se tem ROLE_ADMIN
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            // Admin vê todos
+            model.addAttribute("pacientes", repositoryPaciente.pacientes());
+        } else {
+            // Usuário comum só vê ele mesmo
+            // Buscar Paciente pelo login do usuário
+            Paciente paciente = repositoryPaciente.pacientePorLogin(login);
+            if (paciente != null) {
+                model.addAttribute("pacientes", Collections.singletonList(paciente));
+            } else {
+                // Se não encontrou, lista vazia
+                model.addAttribute("pacientes", Collections.emptyList());
+            }
+        }
+
         return new ModelAndView("/paciente/list", model);
     }
 

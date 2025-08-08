@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
     <title>Lista de Pacientes</title>
@@ -52,7 +52,7 @@
                                    onclick="return confirm('Tem certeza que deseja excluir este registro?')"
                                    class="btn btn-danger btn-sm">Excluir</a>
                                 <a th:href="@{/consulta/consultasPorPaciente/{id}(id=${p.id})}" class="btn btn-info btn-sm">Consultas</a>
-                                <a th:href="@{/medico/form}" class="btn btn-info btn-sm">Medico</a>
+                                <a th:href="@{/medico/formPaciente/{id}(id=${p.id})}" class="btn btn-dark btn-sm" sec:authorize="hasRole('ROLE_ADMIN')">Medico</a>
                             </div>
                         </td>
                     </tr>
@@ -62,10 +62,10 @@
 
             <!-- Botões de ações gerais -->
             <div class="d-flex justify-content-between mt-4">
-                <a th:href="@{/paciente/form}" class="btn btn-success">Inserir Novo Paciente</a>
+                <a th:href="@{/paciente/form}" class="btn btn-success" sec:authorize="hasRole('ROLE_ADMIN')">Inserir Novo Paciente</a>
                 <div>
                     <a th:href="@{/hospital/home}" class="btn btn-secondary me-2">Home</a>
-                    <a th:href="@{/paciente/apresentarPaciente}" class="btn btn-primary">Listar</a>
+                    <a th:href="@{/medico/apresentarMedico}" class="btn btn-primary" sec:authorize="hasRole('ROLE_ADMIN')">Lista de Médicos</a>
                 </div>
             </div>
         </div>

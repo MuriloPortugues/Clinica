@@ -76,4 +76,13 @@ public class UsuarioRepository {
                 .getSingleResult();
     }
 
+    public Usuario saveOrUpdate(Usuario usuario) {
+        if (usuario.getId() == null) {
+            em.persist(usuario);
+            return usuario;
+        } else {
+            return em.merge(usuario);
+        }
+    }
+
 }

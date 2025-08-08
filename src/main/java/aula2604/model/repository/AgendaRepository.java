@@ -53,6 +53,13 @@ public class AgendaRepository {
                 .getResultList();
     }
 
+    public List<Agenda> findByMedicoId(Long medicoId) {
+        String jpql = "SELECT a FROM Agenda a WHERE a.medico.id = :medicoId ORDER BY a.inicio";
+        return em.createQuery(jpql, Agenda.class)
+                .setParameter("medicoId", medicoId)
+                .getResultList();
+    }
+
     public EntityManager getEntityManager() {
         return em;
     }

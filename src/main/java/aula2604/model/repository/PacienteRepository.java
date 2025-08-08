@@ -64,4 +64,17 @@ public class PacienteRepository {
         return query.getResultList();
     }
 
+    public Paciente pacientePorLogin(String login) {
+        String jpql = "SELECT p FROM Paciente p " +
+                "LEFT JOIN FETCH p.enderecos e " +
+                "LEFT JOIN FETCH e.cidade c " +
+                "WHERE p.usuario.login = :login";
+
+        TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
+        query.setParameter("login", login);
+
+        List<Paciente> resultados = query.getResultList();
+        return resultados.isEmpty() ? null : resultados.get(0);
+    }
+
 }

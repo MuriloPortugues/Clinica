@@ -25,6 +25,9 @@ public class Usuario implements Serializable, UserDetails {
     @ManyToMany
     private List<Role> roles = new ArrayList<>();
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private Medico medico;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
@@ -86,5 +89,13 @@ public class Usuario implements Serializable, UserDetails {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public Medico getMedico() {
+        return medico;
+    }
+
+    public void setMedico(Medico medico) {
+        this.medico = medico;
     }
 }

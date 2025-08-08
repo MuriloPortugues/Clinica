@@ -1,15 +1,11 @@
 package aula2604.controller;
 
-import aula2604.model.entity.Agenda;
-import aula2604.model.entity.Consulta;
-import aula2604.model.entity.Medico;
-import aula2604.model.entity.Paciente;
-import aula2604.model.repository.AgendaRepository;
-import aula2604.model.repository.ConsultaRepository;
-import aula2604.model.repository.MedicoRepository;
-import aula2604.model.repository.PacienteRepository;
+import aula2604.model.entity.*;
+import aula2604.model.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -31,11 +27,30 @@ public class AgendaController {
     MedicoRepository repositoryMedico;
     @Autowired
     AgendaRepository repositoryAgenda;
+    @Autowired
+    private UsuarioRepository repositoryUsuario;
+
+
 
     @GetMapping("/disponibilizar")
     public String disponibilizar(Model model) {
-        model.addAttribute("agenda", new Agenda());
-        model.addAttribute("medicos", repositoryMedico.medicos());
+        Agenda agenda = new Agenda();
+        model.addAttribute("agenda", agenda);
+
+        String username = getUsuarioLogado();
+        Usuario usuario = repositoryUsuario.usuario(username);
+
+        boolean isAdmin = usuario.getRoles().stream()
+                .anyMatch(role -> role.getNome().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            model.addAttribute("medicos", repositoryMedico.medicos());
+        } else {
+            // Buscar o médico vinculado a esse usuário
+            Medico medico = repositoryMedico.findByUsuarioId(usuario.getId());
+            model.addAttribute("medicos", List.of(medico));
+            agenda.setMedico(medico); // já seleciona o médico no form
+        }
         return "agenda/disponibilizar";
     }
 
@@ -187,5 +202,28 @@ public class AgendaController {
         repositoryAgenda.removeAgenda(id);
 
         return "redirect:/agenda/list";
+    }
+
+    private String getUsuarioLogado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName(); // retorna o username
+    }
+
+    @GetMapping("/minhaAgenda")
+    public ModelAndView minhaAgenda() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = repositoryUsuario.usuario(login);
+
+        Medico medico = repositoryMedico.findByUsuarioId(usuario.getId());
+        if (medico == null) {
+            // Usuário logado não é médico
+            return new ModelAndView("erro").addObject("msg", "Usuário não é médico");
+        }
+
+        List<Agenda> agendas = repositoryAgenda.findByMedicoId(medico.getId());
+
+        ModelAndView mv = new ModelAndView("agenda/minhaAgenda");
+        mv.addObject("agendas", agendas);
+        return mv;
     }
 }

@@ -5,6 +5,7 @@ import aula2604.model.entity.Paciente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +17,15 @@ public class MedicoRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public void saveMedico(Medico medico){
-        em.persist(medico);
+    public Medico saveMedico(Medico medico){
+        if (medico.getId() == null) {
+            em.persist(medico);
+            return medico;
+        } else {
+            return em.merge(medico);
+        }
     }
+
     public Medico medico(Long id){
         return em.find(Medico.class, id);
     }
@@ -39,6 +46,14 @@ public class MedicoRepository {
         Query query = em.createQuery(jpql, Medico.class);
         query.setParameter("nome", nome);
         return query.getResultList();
+    }
+
+    public Medico findByUsuarioId(Long usuarioId) {
+        String jpql = "SELECT m FROM Medico m WHERE m.usuario.id = :usuarioId";
+        TypedQuery<Medico> query = em.createQuery(jpql, Medico.class);
+        query.setParameter("usuarioId", usuarioId);
+        List<Medico> resultados = query.getResultList();
+        return resultados.isEmpty() ? null : resultados.get(0);
     }
 
 }

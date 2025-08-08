@@ -6,64 +6,66 @@
 </head>
 
 <body>
-<main>
-    <h1>Formulário de Consultas</h1>
+<main class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="text-center fw-bold text-primary mb-4 fs-3">Formulário de Consultas</h2>
 
-    <form th:action="${consulta.id == null} ? @{/consulta/saveConsulta} : @{/consulta/updateConsulta}" th:object="${consulta}" method="post">
-        <input type="hidden" th:field="*{id}">
-        <table border="1" class="table">
-            <thead>
-            <tr>
-                <th>Data</th>
-                <th>Valor</th>
-                <th>Observação</th>
-                <th>Paciente</th>
-                <th>Médico</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>
+        <form th:action="${consulta.id == null} ? @{/consulta/saveConsulta} : @{/consulta/updateConsulta}"
+              th:object="${consulta}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="data" class="form-label">Data</label>
                     <div th:if="${consulta.agenda != null}">
-                        <input type="datetime-local" name="data" th:field="*{data}" placeholder="Data" readonly>
+                        <input type="datetime-local" th:field="*{data}" class="form-control" readonly/>
                     </div>
-
                     <div th:unless="${consulta.agenda != null}">
-                        <input type="datetime-local" name="data" th:field="*{data}" placeholder="Data">
+                        <input type="datetime-local" th:field="*{data}" class="form-control"/>
                     </div>
-                </td>
-                <td><input type="number" th:field="*{valor}" placeholder="Valor" /></td>
-                <td><input type="text" th:field="*{observacao}" placeholder="Observação" /></td>
-                <td>
-                    <select th:field="*{paciente.id}" required class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label for="valor" class="form-label">Valor</label>
+                    <input type="number" th:field="*{valor}" class="form-control" placeholder="Valor"/>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="observacao" class="form-label">Observação</label>
+                    <input type="text" th:field="*{observacao}" class="form-control" placeholder="Observação"/>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="paciente" class="form-label">Paciente</label>
+                    <select th:field="*{paciente.id}" class="form-select" required>
                         <option value="" disabled selected>Selecione Paciente</option>
                         <option th:each="p : ${pacientes}" th:value="${p.id}" th:text="${p.nome}"></option>
                     </select>
-                </td>
-                <td>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="medico" class="form-label">Médico</label>
                     <div th:if="${consulta.agenda != null}">
-                        <input type="text" th:value="${consulta.agenda.medico.nome}" disabled class="form-control"/>
-                        <input type="hidden" th:field="*{medico.id}" th:value="${consulta.agenda.medico.id}" />
+                        <input type="text" th:value="${consulta.agenda.medico.nome}" class="form-control" disabled/>
+                        <input type="hidden" th:field="*{medico.id}" th:value="${consulta.agenda.medico.id}"/>
                     </div>
                     <div th:unless="${consulta.agenda != null}">
-                        <select th:field="*{medico.id}" class="form-control">
+                        <select th:field="*{medico.id}" class="form-select">
                             <option value="" selected disabled>Selecione um médico</option>
                             <option th:each="m : ${medicos}" th:value="${m.id}" th:text="${m.nome}"></option>
                         </select>
                     </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </div>
+            </div>
 
-              <div style="margin-top: 10px;">
-            <input type="submit" value="Enviar" />
-        </div>
-    </form>
-
-    <form th:action="@{/consulta/apresentarConsulta}" method="get">
-        <input type="submit" value="Retornar Lista de Consultas">
-    </form>
+            <div class="d-flex justify-content-between mt-4">
+                <a th:href="@{/consulta/apresentarConsulta}" class="btn btn-secondary">Retornar à Lista</a>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </div>
+        </form>
+    </div>
 </main>
 </body>
 </html>

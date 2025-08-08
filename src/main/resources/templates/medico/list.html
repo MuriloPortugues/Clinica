@@ -2,60 +2,55 @@
 <html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
-    <title> Lita Medicos</title>
+    <title>Lista de Médicos</title>
 </head>
+
 <body>
-    <main>
-        <h2>Lista de Médicos</h2>
+<main class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="text-center fw-bold text-primary mb-4 fs-3">Lista de Médicos</h2>
 
-        <!-- Formulário de pesquisa por nome -->
-        <form th:action="@{/medico/buscarPorNome}" method="get">
-            <input type="text" name="nome" placeholder="Nome do medico" required>
-            <button type="submit">Buscar</button>
+        <!-- Formulário de pesquisa -->
+        <form th:action="@{/medico/buscarPorNome}" method="get" class="input-group mb-4">
+            <input type="text" name="nome" class="form-control" placeholder="Nome do médico" required>
+            <button type="submit" class="btn btn-primary">Buscar</button>
         </form>
 
-        <table class="table" border="1">
-            <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nome</th>
-                <th>CRM</th>
-                <th>Editar</th>
-                <th>Excluir</th>
-                <th>Consultas</th>
-            </tr>
-            </thead>
-            <tr th:each="m : ${medicos}">
-                <td th:text="${m.id}"> </td>
-                <td th:text="${m.nome}"> </td>
-                <td th:text="${m.crm}"> </td>
-
-                <td> <a th:href="@{/medico/editMedico/{id}(id=${m.id})}"><button type="button">Editar</button></a> </td>
-
-                <td> <a onclick="return window.confirm('Tem certeza que deseja excluir este registro?')"  th:href="@{/medico/removeMedico/{id}(id=${m.id})}"><button type="submit">Excluir</button></a> </td>
-
-                <td> <a th:href="@{/consulta/consultasPorMedico/{id}(id=${m.id})}"><button type="button">Consultas</button></a> </td>
-            </tr>
-        </table>
-
-        <!-- Botão para inserir novo medico -->
-        <p></p>
-        <form th:action="@{/medico/form}" method="get">
-            <input type="submit" value="Inserir Novo Medico">
-        </form>
-
-        <p></p>
-        <div style="margin-bottom: 10px;">
-            <form th:action="@{/hospital/home}" method="get">
-                <input type="submit" value="Home">
-            </form>
+        <!-- Tabela de Médicos -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>CRM</th>
+                    <th class="text-center">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="m : ${medicos}">
+                    <td th:text="${m.id}"></td>
+                    <td th:text="${m.nome}"></td>
+                    <td th:text="${m.crm}"></td>
+                    <td class="text-center">
+                        <a th:href="@{/medico/editMedico/{id}(id=${m.id})}" class="btn btn-sm btn-warning me-1">Editar</a>
+                        <a th:href="@{/medico/removeMedico/{id}(id=${m.id})}"
+                           onclick="return confirm('Tem certeza que deseja excluir este registro?')"
+                           class="btn btn-sm btn-danger me-1">Excluir</a>
+                        <a th:href="@{/consulta/consultasPorMedico/{id}(id=${m.id})}" class="btn btn-sm btn-info">Consultas</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
-        <div>
-            <form th:action="@{/medico/apresentarMedico}" method="get">
-                <input type="submit" value="Listar">
-            </form>
+        <!-- Botões adicionais -->
+        <div class="text-center mt-4">
+            <a th:href="@{/medico/form}" class="btn btn-success me-2">Inserir Novo Médico</a>
+            <a th:href="@{/hospital/home}" class="btn btn-outline-secondary me-2">Home</a>
+            <a th:href="@{/medico/apresentarMedico}" class="btn btn-outline-primary">Listar Todos</a>
         </div>
-    </main>
+    </div>
+</main>
 </body>
 </html>

@@ -6,7 +6,7 @@
 </head>
 <body>
 <main class="container mt-4">
-    <h2>Cadastrar Disponibilidade de Consulta</h2>
+    <h2 class="text-center fw-bold text-primary mb-4 fs-3">Cadastrar Disponibilidade de Consulta</h2>
 
     <form th:action="@{/agenda/salvar}" method="post" th:object="${agenda}">
         <input type="hidden" th:field="*{id}">
@@ -46,10 +46,9 @@
         </div>
     </form>
 
-
-    <div class="mt-3">
-        <a th:href="@{/agenda/list}" class="btn btn-outline-primary">Ver horários disponíveis</a>
-    </div>
+    <form th:action="@{/agenda/list}" method="get">
+        <button type="submit" class="btn btn-outline-secondary">Retornar à Lista de Agendas</button>
+    </form>
 </main>
 </body>
 </html>
