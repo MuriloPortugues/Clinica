@@ -39,7 +39,6 @@ public class PacienteController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Form único para Paciente, Endereço, Estado, Cidade e Roles
     @GetMapping("/form")
     public String formPaciente(@RequestParam(required = false) Long estadoId,
                                @RequestParam(required = false) Long cidadeId,
@@ -57,18 +56,18 @@ public class PacienteController {
         }
         model.addAttribute("cidades", cidades);
 
-        // Para manter seleção nos selects
+
         model.addAttribute("estadoId", estadoId);
         model.addAttribute("cidadeId", cidadeId);
 
-        // Listar endereços do paciente (se houver)
+
         if (paciente != null && paciente.getEnderecos() != null) {
             model.addAttribute("enderecos", paciente.getEnderecos());
         } else {
             model.addAttribute("enderecos", new ArrayList<Endereco>());
         }
 
-        // Listar roles para possível visualização/seleção
+
         List<Role> roles = roleRepository.roles();
         model.addAttribute("roles", roleRepository.roles());
 
@@ -80,21 +79,18 @@ public class PacienteController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String login = auth.getName();
 
-        // Verifica se tem ROLE_ADMIN
+
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
 
         if (isAdmin) {
-            // Admin vê todos
             model.addAttribute("pacientes", repositoryPaciente.pacientes());
         } else {
-            // Usuário comum só vê ele mesmo
-            // Buscar Paciente pelo login do usuário
+
             Paciente paciente = repositoryPaciente.pacientePorLogin(login);
             if (paciente != null) {
                 model.addAttribute("pacientes", Collections.singletonList(paciente));
             } else {
-                // Se não encontrou, lista vazia
                 model.addAttribute("pacientes", Collections.emptyList());
             }
         }
@@ -111,28 +107,23 @@ public class PacienteController {
         ModelAndView mv = new ModelAndView("/paciente/form");
         mv.addObject("paciente", paciente);
 
-        // Verifica erros de validação do formulário
         if (result.hasErrors()) {
             return mv;
         }
 
-        // Verifica se já existe um usuário com esse login
         if (repositoryUsuario.usuario(login) != null) {
             mv.addObject("erro", "Usuário já existe");
             return mv;
         }
 
-        // Cria o usuário
         Usuario usuario = new Usuario();
         usuario.setLogin(login);
         usuario.setPassword(passwordEncoder.encode(password));
         usuario.setRoles(new ArrayList<>());
 
-        // Busca roles
         Role rolePaciente = roleRepository.findByNome("ROLE_PACIENTE");
         Role roleAdmin = roleRepository.findByNome("ROLE_ADMIN");
 
-        // Verifica se é o primeiro usuário
         long totalUsuarios = repositoryUsuario.count();
         if (totalUsuarios == 0) {
             usuario.getRoles().add(rolePaciente);
@@ -141,20 +132,16 @@ public class PacienteController {
             usuario.getRoles().add(rolePaciente);
         }
 
-        // Salva o usuário
         repositoryUsuario.saveUsuario(usuario);
 
-        // Associa o usuário ao paciente
         paciente.setUsuario(usuario);
 
-        // Associa paciente aos endereços
         if (paciente.getEnderecos() != null) {
             for (Endereco endereco : paciente.getEnderecos()) {
                 endereco.setPessoa(paciente);
             }
         }
 
-        // Salva o paciente
         repositoryPaciente.savePaciente(paciente);
 
         return new ModelAndView("redirect:/paciente/form?cadastrado=true");
@@ -177,9 +164,7 @@ public class PacienteController {
         }
 
         model.addAttribute("paciente", paciente);
-        model.addAttribute("roles", roleRepository.roles()); // carrega todos os roles disponíveis
-
-        // Também carregue estados e cidades se o formulário usar
+        model.addAttribute("roles", roleRepository.roles());
         model.addAttribute("estados", estadoRepository.findAll());
         model.addAttribute("cidades", cidadeRepository.findAll());
 
@@ -192,7 +177,6 @@ public class PacienteController {
             @ModelAttribute Paciente paciente,
             @RequestParam(value = "roles", required = false) List<Long> roleIds) {
 
-        // Carregar o paciente e o usuário do banco (para evitar sobrescrever dados importantes)
         Paciente pacienteExistente = repositoryPaciente.paciente(paciente.getId());
         if (pacienteExistente == null) {
             return new ModelAndView("redirect:/paciente/apresentarPaciente");
@@ -201,24 +185,21 @@ public class PacienteController {
         Usuario usuario = pacienteExistente.getUsuario();
 
         if (usuario == null) {
-            // Se não tiver usuário associado, criar um novo
             usuario = new Usuario();
         }
 
-        // Atualiza dados básicos
+
         pacienteExistente.setNome(paciente.getNome());
         pacienteExistente.setTelefone(paciente.getTelefone());
 
-        // Atualiza os endereços com segurança para evitar erro de orphanRemoval
         pacienteExistente.getEnderecos().clear();
         if (paciente.getEnderecos() != null) {
             for (Endereco endereco : paciente.getEnderecos()) {
-                endereco.setPessoa(pacienteExistente); // importante se relação é bidirecional
+                endereco.setPessoa(pacienteExistente);
                 pacienteExistente.getEnderecos().add(endereco);
             }
         }
 
-        // Atualiza as roles do usuário
         List<Role> rolesSelecionadas = new ArrayList<>();
         if (roleIds != null) {
             for (Long id : roleIds) {
@@ -230,8 +211,7 @@ public class PacienteController {
         }
         usuario.setRoles(rolesSelecionadas);
 
-        // Persistência
-        repositoryUsuario.saveUsuario(usuario); // ou updateUsuario
+        repositoryUsuario.saveUsuario(usuario);
         pacienteExistente.setUsuario(usuario);
         repositoryPaciente.updatePaciente(pacienteExistente);
 

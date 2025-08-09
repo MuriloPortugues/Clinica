@@ -19,7 +19,8 @@ public abstract class Pessoa {
     @NotBlank
     private String nome;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "usuario_id", unique = true)
     private Usuario usuario;
 
     @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL, orphanRemoval = true)

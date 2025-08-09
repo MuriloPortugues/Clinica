@@ -91,7 +91,7 @@ public class AdminController {
         Role existente = repositoryRole.findByNome(role.getNome());
         if (existente != null) {
             model.addAttribute("erro", "Já existe um perfil com esse nome.");
-            model.addAttribute("role", role);  // importante para preencher o formulário
+            model.addAttribute("role", role);
             return "hospital/formRole";
         }
 
@@ -108,7 +108,6 @@ public class AdminController {
             return new ModelAndView("redirect:/hospital/formRole?erro=true");
         }
 
-        // Só exibe o sufixo no campo, mas salva corretamente depois
         String sufixo = role.getNome().replace("ROLE_", "");
         role.setNome(sufixo);
 
@@ -118,10 +117,8 @@ public class AdminController {
 
     @PostMapping("/updateRole")
     public ModelAndView updateRole(Role role) {
-        // Remove vírgulas indesejadas e espaços
         String nomeCorrigido = role.getNome().replace(",", "").trim();
 
-        // Garante o prefixo ROLE_
         if (!nomeCorrigido.toUpperCase().startsWith("ROLE_")) {
             role.setNome("ROLE_" + nomeCorrigido.toUpperCase());
         } else {

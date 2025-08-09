@@ -46,10 +46,9 @@ public class AgendaController {
         if (isAdmin) {
             model.addAttribute("medicos", repositoryMedico.medicos());
         } else {
-            // Buscar o médico vinculado a esse usuário
             Medico medico = repositoryMedico.findByUsuarioId(usuario.getId());
             model.addAttribute("medicos", List.of(medico));
-            agenda.setMedico(medico); // já seleciona o médico no form
+            agenda.setMedico(medico);
         }
         return "agenda/disponibilizar";
     }
@@ -59,7 +58,6 @@ public class AgendaController {
         Medico medico = repositoryMedico.medico(medicoId);
 
         if (agendaForm.getId() != null) {
-            // EDITAR agenda existente
             Agenda agendaExistente = repositoryAgenda.agenda(agendaForm.getId());
             agendaExistente.setInicio(agendaForm.getInicio());
             agendaExistente.setFim(agendaForm.getFim());
@@ -70,7 +68,6 @@ public class AgendaController {
             repositoryAgenda.updateAgenda(agendaExistente);
 
         } else {
-            // CRIAR várias agendas com intervalos de 30 minutos
             LocalDateTime inicio = agendaForm.getInicio();
             LocalDateTime fim = agendaForm.getFim();
             int duracaoMinutos = agendaForm.getDuracao();
@@ -153,7 +150,6 @@ public class AgendaController {
         } else if (inicio != null && fim != null && medicoId != null) {
             agendas = repositoryAgenda.findByIntervaloEMedicoDisponivel(inicio, fim, medicoId, "DISPONIVEL");
         } else {
-            // Monta a query dinamicamente conforme os parâmetros informados
             StringBuilder jpql = new StringBuilder("SELECT a FROM Agenda a WHERE a.status = :status");
             if (inicio != null) jpql.append(" AND a.inicio >= :inicio");
             if (fim != null) jpql.append(" AND a.fim <= :fim");
@@ -189,7 +185,6 @@ public class AgendaController {
         return new ModelAndView("/agenda/disponibilizar", model);
     }
 
-
     @PostMapping("/excluir")
     public String removeAgenda(@RequestParam Long id) {
         Agenda agenda = repositoryAgenda.agenda(id);
@@ -198,9 +193,7 @@ public class AgendaController {
         for (Consulta consulta : consultas) {
             repositoryConsulta.removeConsulta(consulta.getId());
         }
-
         repositoryAgenda.removeAgenda(id);
-
         return "redirect:/agenda/list";
     }
 
@@ -216,7 +209,6 @@ public class AgendaController {
 
         Medico medico = repositoryMedico.findByUsuarioId(usuario.getId());
         if (medico == null) {
-            // Usuário logado não é médico
             return new ModelAndView("erro").addObject("msg", "Usuário não é médico");
         }
 

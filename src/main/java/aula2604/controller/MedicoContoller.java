@@ -53,10 +53,17 @@ public class MedicoContoller {
         }
 
         Medico medico = new Medico();
-        medico.setNome(paciente.getNome()); // preenche o nome do paciente
+        medico.setNome(paciente.getNome()); // preenche o nome
 
         model.addAttribute("medico", medico);
-        model.addAttribute("pacienteId", paciente.getId()); // necessário para atualizar a ROLE
+        model.addAttribute("pacienteId", paciente.getId());
+
+        if (paciente.getUsuario() != null) {
+            model.addAttribute("usuarioId", paciente.getUsuario().getId());
+            medico.setUsuario(paciente.getUsuario());
+        } else {
+            model.addAttribute("usuarioId", null);
+        }
 
         return new ModelAndView("/medico/form", model);
     }
@@ -65,28 +72,20 @@ public class MedicoContoller {
     public ModelAndView listarMedico(ModelMap model) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // login do usuário logado
+        String username = auth.getName();
 
-        // Verificar roles do usuário
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         boolean isMedico = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_MEDICO"));
-
         List<Medico> medicos;
 
         if (isAdmin) {
-            // Admin vê todos os médicos
             medicos = repositoryMedico.medicos();
         } else if (isMedico) {
-            // Médico vê só ele mesmo
             Usuario usuarioLogado = repositoryUsuario.usuario(username);
-            // Busca o médico pelo nome associado ao usuário
-            // Presumindo que o nome do médico é igual ao nome do usuário (ou adapte se tiver relacionamento direto)
             medicos = repositoryMedico.buscarPorNome(usuarioLogado.getLogin());
-
         } else {
-            // Caso outros roles, retorna lista vazia ou uma mensagem de acesso negado
             medicos = List.of();
         }
 
@@ -95,49 +94,40 @@ public class MedicoContoller {
     }
 
     @PostMapping("/saveMedico")
+    @Transactional
     public Object saveMedico(
             @Valid Medico medico,
             BindingResult result,
-            @RequestParam(value = "pacienteId", required = false) Long pacienteId) {
+            @RequestParam(value = "pacienteId", required = false) Long pacienteId,
+            @RequestParam(value = "usuarioId", required = false) Long usuarioId) {
 
-        if (result.hasErrors())
+        if (result.hasErrors()) {
             return "/medico/form";
+        }
 
         Usuario usuario = null;
-
-        if (pacienteId != null) {
+        if (usuarioId != null) {
+            usuario = repositoryUsuario.usuario(usuarioId);
+        } else if (pacienteId != null) {
             Paciente paciente = repositoryPaciente.paciente(pacienteId);
-            if (paciente != null && paciente.getUsuario() != null) {
-                usuario = repositoryUsuario.usuario(paciente.getUsuario().getId());
-            }
+            if (paciente != null) usuario = paciente.getUsuario();
         } else {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
             usuario = repositoryUsuario.usuario(username);
         }
 
-        if (usuario != null) {
-            if (usuario.getRoles() == null) {
-                usuario.setRoles(new ArrayList<>());
-            }
-
-            Role roleMedico = roleRepository.findByNome("ROLE_MEDICO");
-            if (!usuario.getRoles().contains(roleMedico)) {
-                usuario.getRoles().add(roleMedico);
-            }
-
-            // 🔁 Reassociar corretamente as duas pontas da relação
-            usuario.setMedico(medico);  // seta o médico no usuário
-            medico.setUsuario(usuario); // seta o usuário no médico
-
-            // 🔄 Salva apenas o médico (o Cascade.ALL salvará o usuário automaticamente)
-            medico = repositoryMedico.saveMedico(medico);
-
-        } else {
-            // fallback
-            medico = repositoryMedico.saveMedico(medico);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuário para associação não encontrado.");
         }
 
+        Role roleMedico = roleRepository.findByNome("ROLE_MEDICO");
+        if (roleMedico != null && !usuario.getRoles().contains(roleMedico)) {
+            usuario.getRoles().add(roleMedico);
+        }
+
+        medico.setUsuario(usuario);
+        repositoryMedico.saveMedico(medico);
+        repositoryUsuario.updateUsuario(usuario);
         return new ModelAndView("redirect:/medico/apresentarMedico");
     }
 

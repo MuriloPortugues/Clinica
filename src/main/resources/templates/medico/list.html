@@ -24,6 +24,7 @@
                     <th>ID</th>
                     <th>Nome</th>
                     <th>CRM</th>
+                    <th>ID_Usuário</th>
                     <th class="text-center">Ações</th>
                 </tr>
                 </thead>
@@ -32,6 +33,7 @@
                     <td th:text="${m.id}"></td>
                     <td th:text="${m.nome}"></td>
                     <td th:text="${m.crm}"></td>
+                    <td th:text="${m.usuario != null ? m.usuario.id : '—'}"></td>
                     <td class="text-center">
                         <a th:href="@{/medico/editMedico/{id}(id=${m.id})}" class="btn btn-sm btn-warning me-1">Editar</a>
                         <a th:href="@{/medico/removeMedico/{id}(id=${m.id})}"

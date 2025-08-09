@@ -12,7 +12,13 @@
 
         <form th:action="${medico.id == null} ? @{/medico/saveMedico} : @{/medico/updateMedico}"
               th:object="${medico}" method="post">
+
+            <!-- Campo oculto para pacienteId, caso exista -->
             <input type="hidden" name="pacienteId" th:value="${pacienteId}"/>
+
+            <!-- Campo oculto para usuárioId, importante para o backend -->
+            <input type="hidden" name="usuarioId"
+                   th:value="${usuarioId != null ? usuarioId : (medico.usuario != null ? medico.usuario.id : '')}" />
 
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -29,6 +35,16 @@
                            th:errorclass="is-invalid" placeholder="Número do CRM"
                            class="form-control">
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('crm')}" th:errors="*{crm}">Insira o CRM</div>
+                </div>
+            </div>
+
+            <!-- Exibir o ID do usuário para o usuário visualizar, mas sem editar -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="usuarioIdDisplay" class="form-label">ID do Usuário</label>
+                    <input type="text" id="usuarioIdDisplay"
+                           th:value="${usuarioId != null ? usuarioId : (medico.usuario != null ? medico.usuario.id : '')}"
+                           class="form-control" readonly />
                 </div>
             </div>
 
