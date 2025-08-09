@@ -38,15 +38,7 @@
                 </div>
             </div>
 
-            <!-- Exibir o ID do usuário para o usuário visualizar, mas sem editar -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="usuarioIdDisplay" class="form-label">ID do Usuário</label>
-                    <input type="text" id="usuarioIdDisplay"
-                           th:value="${usuarioId != null ? usuarioId : (medico.usuario != null ? medico.usuario.id : '')}"
-                           class="form-control" readonly />
-                </div>
-            </div>
+
 
             <div class="text-center">
                 <button type="submit" class="btn btn-success">Salvar Médico</button>

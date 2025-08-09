@@ -65,6 +65,7 @@
                 <a th:href="@{/paciente/form}" class="btn btn-success" sec:authorize="hasRole('ROLE_ADMIN')">Inserir Novo Paciente</a>
                 <div>
                     <a th:href="@{/hospital/home}" class="btn btn-secondary me-2">Home</a>
+                    <a th:href="@{/agenda/list}" class="btn btn-success me-2">Agendar Consulta</a>
                     <a th:href="@{/medico/apresentarMedico}" class="btn btn-primary" sec:authorize="hasRole('ROLE_ADMIN')">Lista de Médicos</a>
                 </div>
             </div>
