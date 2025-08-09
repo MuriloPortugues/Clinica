@@ -4,10 +4,8 @@ package aula2604.controller;
 import aula2604.model.entity.Agenda;
 import aula2604.model.entity.Consulta;
 import aula2604.model.entity.Medico;
-import aula2604.model.repository.AgendaRepository;
-import aula2604.model.repository.ConsultaRepository;
-import aula2604.model.repository.MedicoRepository;
-import aula2604.model.repository.PacienteRepository;
+import aula2604.model.entity.Paciente;
+import aula2604.model.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,6 +15,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,11 +32,16 @@ public class ConsultaController {
     MedicoRepository repositoryMedico;
     @Autowired
     AgendaRepository repositoryAgenda;
+    @Autowired
+    private UsuarioRepository repositoryUsuario;
 
 
 
     @GetMapping("/form")
-    public String abrirFormularioConsulta(@RequestParam(required = false) Long agendaId, Model model) {
+    public String abrirFormularioConsulta(
+            @RequestParam(required = false) Long agendaId,
+            Principal principal,
+            Model model) {
 
         Consulta consulta = new Consulta();
 
@@ -48,6 +52,12 @@ public class ConsultaController {
                 consulta.setData(agenda.getInicio());
                 consulta.setMedico(agenda.getMedico());
             }
+        }
+
+        // Buscar paciente do usuário logado
+        Paciente pacienteLogado = repositoryPaciente.pacientePorLogin(principal.getName());
+        if (pacienteLogado != null) {
+            consulta.setPaciente(pacienteLogado);
         }
 
         model.addAttribute("consulta", consulta);
@@ -64,7 +74,7 @@ public class ConsultaController {
         return new ModelAndView("/consulta/list", model);
     }
 
-    @Transactional
+
     @PostMapping("/saveConsulta")
     public ModelAndView saveConsulta(Consulta consulta) {
         repositoryConsulta.saveConsulta(consulta);

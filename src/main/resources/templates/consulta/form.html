@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}">
+<html th:replace="~{fragments/layout :: layout(~{::head},~{::main})}"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:replace="~{fragments/head :: head(~{}, ~{::title})}">
     <title>Formulário Consultas</title>
@@ -9,6 +10,8 @@
 <main class="container mt-5">
     <div class="card shadow p-4">
         <h2 class="text-center fw-bold text-primary mb-4 fs-3">Formulário de Consultas</h2>
+
+        <div th:if="${erroMensagem}" class="alert alert-danger" role="alert" th:text="${erroMensagem}"></div>
 
         <form th:action="${consulta.id == null} ? @{/consulta/saveConsulta} : @{/consulta/updateConsulta}"
               th:object="${consulta}" method="post">
@@ -25,7 +28,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <!-- Campo Valor só para Médico ou Admin -->
+                <div class="col-md-4" sec:authorize="hasAnyRole('ROLE_MEDICO','ROLE_ADMIN')">
                     <label for="valor" class="form-label">Valor</label>
                     <input type="number" th:field="*{valor}" class="form-control" placeholder="Valor"/>
                 </div>
@@ -37,18 +41,18 @@
             </div>
 
             <div class="row mb-3">
+                <!-- Paciente fixo -->
                 <div class="col-md-6">
                     <label for="paciente" class="form-label">Paciente</label>
-                    <select th:field="*{paciente.id}" class="form-select" required>
-                        <option value="" disabled selected>Selecione Paciente</option>
-                        <option th:each="p : ${pacientes}" th:value="${p.id}" th:text="${p.nome}"></option>
-                    </select>
+                    <input type="text" th:value="${consulta.paciente.nome}" class="form-control" readonly/>
+                    <input type="hidden" th:field="*{paciente.id}" th:value="${consulta.paciente.id}"/>
                 </div>
 
+                <!-- Médico fixo se vier da agenda -->
                 <div class="col-md-6">
                     <label for="medico" class="form-label">Médico</label>
                     <div th:if="${consulta.agenda != null}">
-                        <input type="text" th:value="${consulta.agenda.medico.nome}" class="form-control" disabled/>
+                        <input type="text" th:value="${consulta.agenda.medico.nome}" class="form-control" readonly/>
                         <input type="hidden" th:field="*{medico.id}" th:value="${consulta.agenda.medico.id}"/>
                     </div>
                     <div th:unless="${consulta.agenda != null}">
@@ -62,7 +66,7 @@
 
             <div class="d-flex justify-content-between mt-4">
                 <a th:href="@{/consulta/apresentarConsulta}" class="btn btn-secondary">Retornar à Lista</a>
-                <button type="submit" class="btn btn-primary">Enviar</button>
+                <button type="submit" class="btn btn-primary">Agendar</button>
             </div>
         </form>
     </div>
