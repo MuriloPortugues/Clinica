@@ -1,40 +1,11 @@
 
-INSERT INTO estado (id, nome, sigla) VALUES (1, 'Acre', 'AC');
-INSERT INTO estado (id, nome, sigla) VALUES (2, 'Alagoas', 'AL');
-INSERT INTO estado (id, nome, sigla) VALUES (3, 'Amapá', 'AP');
-INSERT INTO estado (id, nome, sigla) VALUES (4, 'Amazonas', 'AM');
-INSERT INTO estado (id, nome, sigla) VALUES (5, 'Bahia', 'BA');
-INSERT INTO estado (id, nome, sigla) VALUES (6, 'Ceará', 'CE');
-INSERT INTO estado (id, nome, sigla) VALUES (7, 'Distrito Federal', 'DF');
-INSERT INTO estado (id, nome, sigla) VALUES (8, 'Espírito Santo', 'ES');
-INSERT INTO estado (id, nome, sigla) VALUES (9, 'Goiás', 'GO');
-INSERT INTO estado (id, nome, sigla) VALUES (10, 'Maranhão', 'MA');
-INSERT INTO estado (id, nome, sigla) VALUES (11, 'Mato Grosso', 'MT');
-INSERT INTO estado (id, nome, sigla) VALUES (12, 'Mato Grosso do Sul', 'MS');
-INSERT INTO estado (id, nome, sigla) VALUES (13, 'Minas Gerais', 'MG');
-INSERT INTO estado (id, nome, sigla) VALUES (14, 'Pará', 'PA');
-INSERT INTO estado (id, nome, sigla) VALUES (15, 'Paraíba', 'PB');
-INSERT INTO estado (id, nome, sigla) VALUES (16, 'Paraná', 'PR');
-INSERT INTO estado (id, nome, sigla) VALUES (17, 'Pernambuco', 'PE');
-INSERT INTO estado (id, nome, sigla) VALUES (18, 'Piauí', 'PI');
-INSERT INTO estado (id, nome, sigla) VALUES (19, 'Rio de Janeiro', 'RJ');
-INSERT INTO estado (id, nome, sigla) VALUES (20, 'Rio Grande do Norte', 'RN');
-INSERT INTO estado (id, nome, sigla) VALUES (21, 'Rio Grande do Sul', 'RS');
-INSERT INTO estado (id, nome, sigla) VALUES (22, 'Rondônia', 'RO');
-INSERT INTO estado (id, nome, sigla) VALUES (23, 'Roraima', 'RR');
-INSERT INTO estado (id, nome, sigla) VALUES (24, 'Santa Catarina', 'SC');
-INSERT INTO estado (id, nome, sigla) VALUES (25, 'São Paulo', 'SP');
-INSERT INTO estado (id, nome, sigla) VALUES (26, 'Sergipe', 'SE');
-INSERT INTO estado (id, nome, sigla) VALUES (27, 'Tocantins', 'TO');
+INSERT INTO estado (nome, sigla) VALUES ('Acre', 'AC'), ('Alagoas', 'AL'), ('Amapá', 'AP'), ('Amazonas', 'AM'), ('Bahia', 'BA'), ('Ceará', 'CE'), ('Distrito Federal', 'DF'), ('Espírito Santo', 'ES'), ('Goiás', 'GO'), ('Maranhão', 'MA'), ('Mato Grosso', 'MT'), ('Mato Grosso do Sul', 'MS'), ('Minas Gerais', 'MG'), ('Pará', 'PA'), ('Paraíba', 'PB'), ('Paraná', 'PR'), ('Pernambuco', 'PE'), ('Piauí', 'PI'), ('Rio de Janeiro', 'RJ'), ('Rio Grande do Norte', 'RN'), ('Rio Grande do Sul', 'RS'), ('Rondônia', 'RO'), ('Roraima', 'RR'), ('Santa Catarina', 'SC'), ('São Paulo', 'SP'), ('Sergipe', 'SE'), ('Tocantins', 'TO');
 
-INSERT INTO cidade (estado_id, nome) VALUES (27, 'Palmas');
-INSERT INTO cidade (estado_id, nome) VALUES (27, 'Gurupi');
-INSERT INTO cidade (estado_id, nome) VALUES (27, 'Araguaina');
-INSERT INTO cidade (estado_id, nome) VALUES (1, 'Rio Branco');
-INSERT INTO cidade (estado_id, nome) VALUES (1, 'Teste');
-INSERT INTO cidade (estado_id, nome) VALUES (25, 'Santos');
 
-INSERT INTO role (nome) VALUES ( 'ROLE_ADMIN');
-INSERT INTO role (nome) VALUES ( 'ROLE_PACIENTE');
-INSERT INTO role (nome) VALUES ('ROLE_MEDICO');
+INSERT INTO cidade (nome, estado_id) VALUES ('Rio Branco', 1), ('Cruzeiro do Sul', 1), ('Sena Madureira', 1), ('Maceió', 2), ('Arapiraca', 2), ('Palmeira dos Índios', 2), ('Macapá', 3), ('Santana', 3), ('Laranjal do Jari', 3), ('Manaus', 4), ('Parintins', 4), ('Itacoatiara', 4), ('Salvador', 5), ('Feira de Santana', 5), ('Vitória da Conquista', 5), ('Fortaleza', 6), ('Caucaia', 6), ('Juazeiro do Norte', 6), ('Brasília', 7), ('Taguatinga', 7), ('Ceilândia', 7), ('Vitória', 8), ('Vila Velha', 8), ('Serra', 8), ('Goiânia', 9), ('Aparecida de Goiânia', 9), ('Anápolis', 9), ('São Luís', 10), ('Imperatriz', 10), ('Timon', 10), ('Cuiabá', 11), ('Várzea Grande', 11), ('Rondonópolis', 11), ('Campo Grande', 12), ('Dourados', 12), ('Três Lagoas', 12), ('Belo Horizonte', 13), ('Uberlândia', 13), ('Contagem', 13), ('Belém', 14), ('Ananindeua', 14), ('Santarém', 14), ('João Pessoa', 15), ('Campina Grande', 15), ('Bayeux', 15), ('Curitiba', 16), ('Londrina', 16), ('Maringá', 16), ('Recife', 17), ('Jaboatão dos Guararapes', 17), ('Olinda', 17), ('Teresina', 18), ('Parnaíba', 18), ('Picos', 18), ('Rio de Janeiro', 19), ('São Gonçalo', 19), ('Duque de Caxias', 19), ('Natal', 20), ('Mossoró', 20), ('Parnamirim', 20), ('Porto Alegre', 21), ('Caxias do Sul', 21), ('Pelotas', 21), ('Porto Velho', 22), ('Ji-Paraná', 22), ('Ariquemes', 22), ('Boa Vista', 23), ('Rorainópolis', 23), ('Caracaraí', 23), ('Florianópolis', 24), ('Joinville', 24), ('Blumenau', 24), ('São Paulo', 25), ('Guarulhos', 25), ('Campinas', 25), ('Aracaju', 26), ('Nossa Senhora do Socorro', 26), ('Lagarto', 26), ('Palmas', 27), ('Araguaína', 27), ('Gurupi', 27);
+
+
+INSERT INTO role (nome) VALUES ( 'ROLE_ADMIN'), ( 'ROLE_PACIENTE');
+
+
 
