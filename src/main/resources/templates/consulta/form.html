@@ -15,7 +15,10 @@
 
         <form th:action="${consulta.id == null} ? @{/consulta/saveConsulta} : @{/consulta/updateConsulta}"
               th:object="${consulta}" method="post">
+
             <input type="hidden" th:field="*{id}"/>
+
+            <input type="hidden" th:if="${consulta.agenda != null}" th:field="*{agenda.id}"/>
 
             <div class="row mb-3">
                 <div class="col-md-4">
@@ -28,7 +31,6 @@
                     </div>
                 </div>
 
-                <!-- Campo Valor só para Médico ou Admin -->
                 <div class="col-md-4" sec:authorize="hasAnyRole('ROLE_MEDICO','ROLE_ADMIN')">
                     <label for="valor" class="form-label">Valor</label>
                     <input type="number" th:field="*{valor}" class="form-control" placeholder="Valor"/>
@@ -41,14 +43,12 @@
             </div>
 
             <div class="row mb-3">
-                <!-- Paciente fixo -->
                 <div class="col-md-6">
                     <label for="paciente" class="form-label">Paciente</label>
                     <input type="text" th:value="${consulta.paciente.nome}" class="form-control" readonly/>
                     <input type="hidden" th:field="*{paciente.id}" th:value="${consulta.paciente.id}"/>
                 </div>
 
-                <!-- Médico fixo se vier da agenda -->
                 <div class="col-md-6">
                     <label for="medico" class="form-label">Médico</label>
                     <div th:if="${consulta.agenda != null}">

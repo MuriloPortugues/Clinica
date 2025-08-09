@@ -17,29 +17,21 @@ import java.util.List;
 @Transactional
 @Repository
 public class ConsultaRepository {
+
     @PersistenceContext
     private EntityManager em;
 
     public void saveConsulta(Consulta consulta){
         em.persist(consulta);
     }
+
     public Consulta consulta(Long id){
         return em.find(Consulta.class, id);
     }
 
-
     public List<Consulta> consultas() {
         List<Consulta> lista = em.createQuery("from Consulta", Consulta.class).getResultList();
-
-        LocalDateTime now = LocalDateTime.now();
-        for (Consulta c : lista) {
-            if (c.getData().isBefore(now)) {
-                c.setStatus("Realizada");
-            } else {
-                c.setStatus("Agendada");
-            }
-        }
-        return lista; 
+        return processarStatusConsultas(lista);
     }
 
     public void removeConsulta(Long id){
@@ -54,13 +46,15 @@ public class ConsultaRepository {
     public List<Consulta> consultasPorPaciente(Long pacienteId) {
         Query query = em.createQuery("SELECT c FROM Consulta c WHERE c.paciente.id = :pacienteId");
         query.setParameter("pacienteId", pacienteId);
-        return query.getResultList();
+        List<Consulta> lista = query.getResultList();
+        return processarStatusConsultas(lista);
     }
 
     public List<Consulta> consultasPorMedico(Long medicoId) {
         Query query = em.createQuery("SELECT c FROM Consulta c WHERE c.medico.id = :medicoId");
         query.setParameter("medicoId", medicoId);
-        return query.getResultList();
+        List<Consulta> lista = query.getResultList();
+        return processarStatusConsultas(lista);
     }
 
     public List<Consulta> buscarPorData(LocalDate data) {
@@ -71,20 +65,33 @@ public class ConsultaRepository {
         TypedQuery<Consulta> query = em.createQuery(jpql, Consulta.class);
         query.setParameter("start", startOfDay);
         query.setParameter("end", endOfDay);
-        return query.getResultList();
+        List<Consulta> lista = query.getResultList();
+        return processarStatusConsultas(lista);
     }
 
     public List<Consulta> buscarPorAgenda(Agenda agenda) {
         TypedQuery<Consulta> query = em.createQuery("SELECT c FROM Consulta c WHERE c.agenda = :agenda", Consulta.class);
         query.setParameter("agenda", agenda);
-        return query.getResultList();
+        List<Consulta> lista = query.getResultList();
+        return processarStatusConsultas(lista);
     }
 
     public List<Consulta> findByStatus(String status) {
         TypedQuery<Consulta> query = em.createQuery("SELECT c FROM Consulta c WHERE c.status = :status", Consulta.class);
         query.setParameter("status", status);
-        return query.getResultList();
+        List<Consulta> lista = query.getResultList();
+        return processarStatusConsultas(lista);
     }
 
-
+    private List<Consulta> processarStatusConsultas(List<Consulta> consultas) {
+        LocalDateTime now = LocalDateTime.now();
+        for (Consulta c : consultas) {
+            if (c.getData() != null && c.getData().isBefore(now)) {
+                c.setStatus("REALIZADA");
+            } else {
+                c.setStatus("AGENDADA");
+            }
+        }
+        return consultas;
+    }
 }

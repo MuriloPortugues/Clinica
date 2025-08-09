@@ -9,6 +9,9 @@ import aula2604.model.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -70,7 +73,30 @@ public class ConsultaController {
 
     @GetMapping("/apresentarConsulta")
     public ModelAndView listarConsulta(ModelMap model) {
-        model.addAttribute("consultas", repositoryConsulta.consultas());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String login = auth.getName();
+
+        // Verifica se usuário tem ROLE_ADMIN ou ROLE_MEDICO
+        boolean isAdminOrMedico = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN") || role.equals("ROLE_MEDICO"));
+
+        List<Consulta> consultas;
+
+        if (isAdminOrMedico) {
+            // mostra todas as consultas
+            consultas = repositoryConsulta.consultas();
+        } else {
+            // pega o paciente pelo login do usuário logado
+            Paciente paciente = repositoryPaciente.pacientePorLogin(login);
+            if (paciente != null) {
+                consultas = repositoryConsulta.consultasPorPaciente(paciente.getId());
+            } else {
+                consultas = List.of(); // lista vazia caso paciente não encontrado
+            }
+        }
+
+        model.addAttribute("consultas", consultas);
         return new ModelAndView("/consulta/list", model);
     }
 
@@ -89,10 +115,42 @@ public class ConsultaController {
     }
 
     @GetMapping("/removeConsulta/{id}")
-    public ModelAndView removePaciente(@PathVariable("id") Long id){
-        repositoryConsulta.removeConsulta(id);
-        return new ModelAndView("redirect:/consulta/apresentarConsulta");
+    public ModelAndView removeConsulta(@PathVariable("id") Long id, ModelMap model){
+        // Busca a consulta pelo ID
+        Consulta consulta = repositoryConsulta.consulta(id);
+
+        // Se a consulta existe e não foi realizada...
+        if (consulta != null && !"REALIZADA".equalsIgnoreCase(consulta.getStatus())) {
+            // Busca a agenda associada à consulta
+            Agenda agenda = consulta.getAgenda();
+
+            // Se a agenda existir, muda o status para "DISPONIVEL"
+            if(agenda != null) {
+                agenda.setStatus("DISPONIVEL");
+                repositoryAgenda.updateAgenda(agenda);
+            }
+
+            // Remove a consulta
+            repositoryConsulta.removeConsulta(id);
+
+            // Redireciona para a página de apresentação de consultas
+            return new ModelAndView("redirect:/consulta/apresentarConsulta");
+        }
+
+        // Caso a consulta seja "REALIZADA", exibe a mensagem de erro
+        if (consulta != null && "REALIZADA".equalsIgnoreCase(consulta.getStatus())) {
+            model.addAttribute("mensagemErro", "Impossível cancelar, consulta já realizada.");
+        } else {
+            model.addAttribute("mensagemErro", "Consulta não encontrada ou já cancelada.");
+        }
+
+        // Obtém a lista de consultas novamente para exibir na página
+        model.addAttribute("consultas", repositoryConsulta.consultas());
+
+        // Retorna para a view de lista com a mensagem de erro
+        return new ModelAndView("/consulta/list", model);
     }
+
 
     @GetMapping("/editConsulta/{id}")
     public ModelAndView editConsulta(@PathVariable("id") Long id, ModelMap model) {
